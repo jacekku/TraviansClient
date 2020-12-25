@@ -4,7 +4,7 @@ let connected = false
 function connect() {
     name = document.getElementById('name')
 
-    websocket = new WebSocket('ws://traviansserver.herokuapp.com');
+    websocket = new WebSocket('wss://traviansserver.herokuapp.com');
     // websocket = new WebSocket('ws://localhost:8080');
     websocket.onopen = function (event) {
         websocket.send(JSON.stringify({ type: 'connect', name: name.value, position: { x: 0, y: 0 } }))
