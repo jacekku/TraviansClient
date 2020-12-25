@@ -1,10 +1,10 @@
 let websocket
-let name,data
+let name, data
 
 function connect() {
     name = document.getElementById('name')
 
-    websocket = new WebSocket('ws://localhost:8080');
+    websocket = new WebSocket('ws://traviansserver.herokuapp.com/:8080');
     websocket.onopen = function (event) {
         websocket.send(name.value + " connected")
     };
