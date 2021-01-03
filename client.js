@@ -10,8 +10,8 @@ players = ""
 function connect() {
     name = document.getElementById('name')
     playerName = name.value
-    // websocket = new WebSocket('wss://traviansserver.herokuapp.com');
-    websocket = new WebSocket('ws://localhost:8080/ws');
+    websocket = new WebSocket('wss://traviansserver.herokuapp.com/ws');
+    // websocket = new WebSocket('ws://localhost:8080/ws');
     websocket.onopen = function (event) {
         websocket.send(JSON.stringify({
             type: 'CONNECT',
