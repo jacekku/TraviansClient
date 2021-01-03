@@ -1,13 +1,24 @@
 let websocket
 let name
 let connected = false
+let X = 1,
+    Y = 1
+let playerName
+terrain = ""
+players = ""
+
 function connect() {
     name = document.getElementById('name')
-
-    websocket = new WebSocket('wss://traviansserver.herokuapp.com');
-    // websocket = new WebSocket('ws://localhost:8080');
+    playerName = name.value
+    // websocket = new WebSocket('wss://traviansserver.herokuapp.com');
+    websocket = new WebSocket('ws://localhost:8080/ws');
     websocket.onopen = function (event) {
-        websocket.send(JSON.stringify({ type: 'connect', name: name.value, position: { x: 0, y: 0 } }))
+        websocket.send(JSON.stringify({
+            type: 'CONNECT',
+            player: {
+                name: playerName
+            },
+        }))
 
     };
     websocket.onmessage = handleGetMessage
@@ -18,20 +29,11 @@ function connect() {
 function move(newPosition) {
     websocket.send(JSON.stringify({
         type: 'move',
-        name: name.value,
-        position: newPosition
+        player: {
+            name: playerName
+        },
+        move: newPosition
     }))
-}
-
-function setEventListener() {
-    const blocks = document.querySelectorAll('.block')
-    blocks.forEach(block => {
-        block.addEventListener('click', (event) => {
-            const y = block.parentElement.id[1]
-            const x = block.id[1]
-            move({ x, y })
-        })
-    })
 }
 
 function handleConnected() {
@@ -43,6 +45,7 @@ function handleConnected() {
     login.classList.remove('visible')
     login.classList.add('hidden')
 }
+
 function handleDisconnected() {
     const login = document.getElementById('login')
     const game = document.getElementById('game')
@@ -53,20 +56,6 @@ function handleDisconnected() {
     login.classList.remove('hidden')
 }
 
-
-function mapPositionsToGrid(players) {
-    const blocks = document.querySelectorAll('.block')
-    blocks.forEach(block => block.innerHTML = '')
-    players.forEach(data => {
-        const name = data.name
-        const position = data.position
-        row = document.querySelector('#r' + position.y)
-        block = row.querySelector('#b' + position.x)
-        block.innerHTML += name + "<br/>"
-
-    })
-}
-
 function handleGetMessage(event) {
     if (event.data == "ERROR") {
         connected = false
@@ -75,8 +64,56 @@ function handleGetMessage(event) {
     if (event.data == "CONNECTED") {
         connected = true
         handleConnected()
-        setEventListener()
         return
     }
-    mapPositionsToGrid(JSON.parse(event.data))
+    // console.log(event.data)
+    const incomingData = JSON.parse(event.data)
+    if(incomingData.type == "TERRAIN") {
+        terrain = incomingData.data
+        return
+    }
+    if(incomingData.type == "PLAYERS") {
+        players = incomingData.data
+        const thisPlayer = players.find(pl => pl.name == playerName)
+        X = thisPlayer.x
+        Y = thisPlayer.y
+        return
+    }
+
+
+}
+
+function keyPressed() {
+    movePlayer()
+}
+
+
+const mvmspeed = 1
+
+function movePlayer() {
+    if(!terrain)return
+    if (keyCode === LEFT_ARROW) {
+        X -= mvmspeed
+    } else if (keyCode === RIGHT_ARROW) {
+        X += mvmspeed
+    } else if (keyCode === UP_ARROW) {
+        Y -= mvmspeed
+    } else if (keyCode === DOWN_ARROW) {
+        Y += mvmspeed
+    }
+    sendMovePlayer(playerName, X, Y)
+}
+
+function sendMovePlayer(name, x, y){
+    if(websocket){
+        websocket.send(JSON.stringify({
+            type:"MOVE",
+            player: {name},
+            move: {x,y}
+        }))
+    }
+}
+
+function clampNumber(num, min, max) {
+    return Math.min(Math.max(num, min), max);
 }

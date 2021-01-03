@@ -1,68 +1,38 @@
 .visible {
     visibility: visible;
 }
-
 .hidden {
     visibility: hidden;
 }
 
-.row {
-    margin-top: 0px;
 
+.menu {
+    width: 120px;
+    box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    display: none;
 }
 
-.block {
-    position: fixed;
-    top: inherit;
-    width: 100px;
-    height: 100px;
-    border: 1px solid black;
-    display: inline-block;
+.menu .menu-options {
+    list-style: none;
+    padding: 10px 0;
 }
 
-#r0 {
-    top: 0px;
+.menu .menu-options .menu-option {
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 40px 10px 20px;
+    cursor: pointer;
 }
 
-#r1 {
-    top: 100px;
+.menu .menu-options {
+    background: rgb(255, 255, 255);
+}
+.menu-option:hover {
+    background: rgba(0, 0, 0, 0.2);
 }
 
-#r2 {
-    top: 200px;
-}
-
-#r3 {
-    top: 300px;
-}
-
-#r4 {
-    top: 400px
-}
-
-#b0 {
-    left: 0px;
-}
-
-#b1 {
-    left: 100px;
-}
-
-#b2 {
-    left: 200px
-}
-
-#b3 {
-    left: 300px
-}
-
-#b4 {
-    left: 400px
-}
-
-.player {
-    width: 25px;
-    height: 25px;
-    border: 1px solid black;
-    background-color: blue;
+.menu-header {
+    text-align: center;
+    text-decoration: underline;
 }
