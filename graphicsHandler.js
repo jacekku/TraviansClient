@@ -18,21 +18,23 @@ function drawBlock(block) {
     rect(block.x * blockSize, block.y * blockSize, blockSize, blockSize)
     fill(255)
     // text(`${block.x},${block.y}`,block.x * blockSize+2,block.y * blockSize+textSize())
-    moistureImg = mapImageToString(block.moisture)
+    moistureImg = mapImageToString(block.moisture, MOISTURE)
     if (moistureImg) {
         image(moistureImg, block.x * blockSize, block.y * blockSize, blockSize, blockSize)
     }
-    materialRichnessImg = mapImageToString(block.materialRichness)
+    materialRichnessImg = mapImageToString(block.materialRichness, MATERIAL_RICHNESS)
     if (materialRichnessImg) {
         image(materialRichnessImg, block.x * blockSize, block.y * blockSize, blockSize, blockSize)
     }
-    animalsImg = mapImageToString(block.animals)
+    animalsImg = mapImageToString(block.animals, ANIMALS)
     if (animalsImg) {
         image(animalsImg, block.x * blockSize, block.y * blockSize, blockSize, blockSize)
     }
 }
 
-function mapImageToString(string) {
+
+function mapImageToString(type, sourceEnum) {
+    string = sourceEnum[type]
     switch (string) {
         case 'COPPER':
             return IMAGES.copper
@@ -173,9 +175,9 @@ function drawPointer(pointer) {
 
 
 function getBlockColor(block) {
-    if (block.type == BIOMES.MOUNTAIN) return 'gray'
-    if (block.type == BIOMES.PLAIN) return 'darkgreen'
-    if (block.type == BIOMES.WATER) return 'darkblue'
+    if (BIOMES[block.type] == "MOUNTAIN") return 'gray'
+    if (BIOMES[block.type] == "PLAIN") return 'darkgreen'
+    if (BIOMES[block.type] == "WATER") return 'darkblue'
     return block.type
 }
 

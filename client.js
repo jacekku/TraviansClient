@@ -10,8 +10,8 @@ players = ""
 function connect() {
     name = document.getElementById('name')
     playerName = name.value
-    websocket = new WebSocket('wss://traviansserver.herokuapp.com/ws');
-    // websocket = new WebSocket('ws://localhost:8080/ws');
+    // websocket = new WebSocket('wss://traviansserver.herokuapp.com/ws');
+    websocket = new WebSocket('ws://localhost:8080/ws');
     websocket.onopen = function (event) {
         websocket.send(JSON.stringify({
             type: 'CONNECT',
@@ -66,7 +66,7 @@ function handleGetMessage(event) {
         handleConnected()
         return
     }
-    // console.log(event.data)
+    console.log(event.data)
     const incomingData = JSON.parse(event.data)
     if(incomingData.type == "TERRAIN") {
         terrain = incomingData.data
@@ -101,6 +101,8 @@ function movePlayer() {
     } else if (keyCode === DOWN_ARROW) {
         Y += mvmspeed
     }
+    X = clampNumber(X, 0, terrain.width - 1)
+    Y = clampNumber(Y, 0, terrain.height - 1)
     sendMovePlayer(playerName, X, Y)
 }
 

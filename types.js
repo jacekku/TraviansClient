@@ -1,5 +1,23 @@
-const BIOMES = {
-    WATER: 'WATER',
-    PLAIN: 'PLAIN',
-    MOUNTAIN: 'MOUNTAIN',
-}
+const BIOMES = [
+    "WATER",
+    "PLAIN",
+    "MOUNTAIN"
+]
+
+const ANIMALS = [
+    "FISH",
+    "DEER",
+    "NO_ANIMAL"
+]
+const MATERIAL_RICHNESS = [
+    "GOLD",
+    "COPPER",
+    "IRON",
+    "NOTHING"
+]
+const MOISTURE = [
+    "DESERT",
+    "FIELD",
+    "FOREST",
+    "NONE"
+]
