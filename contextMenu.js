@@ -44,10 +44,10 @@ function createHeader(text) {
 function addBlockInfo(block) {
     menuOptions.innerHTML = ''
     menuOptions.appendChild(createHeader('Block Info'))
-    block.animals && block.animals != ANIMALS.NO_ANIMALS ? menuOptions.appendChild(createLi(block.animals)) : null
-    block.moisture ? menuOptions.appendChild(createLi(block.moisture)) : null
-    block.type ? menuOptions.appendChild(createLi(block.type)) : null
-    block.materialRichness ? menuOptions.appendChild(createLi(block.materialRichness)) : null
+    block.animals && ANIMALS[block.animals] != "NO_ANIMAL" ? menuOptions.appendChild(createLi(ANIMALS[block.animals])) : null
+    block.moisture ? menuOptions.appendChild(createLi(MOISTURE[block.moisture])) : null
+    block.type ? menuOptions.appendChild(createLi(BIOMES[block.type])) : null
+    block.materialRichness ? menuOptions.appendChild(createLi(MATERIAL_RICHNESS[block.materialRichness])) : null
 }
 
 

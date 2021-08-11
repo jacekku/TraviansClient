@@ -177,6 +177,7 @@ function drawPointer(pointer) {
 function getBlockColor(block) {
     if (BIOMES[block.type] == "MOUNTAIN") return 'gray'
     if (BIOMES[block.type] == "PLAIN") return 'darkgreen'
+    if (BIOMES[block.type] == "BEACH") return 'yellow'
     if (BIOMES[block.type] == "WATER") return 'darkblue'
     return block.type
 }

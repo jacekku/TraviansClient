@@ -1,5 +1,6 @@
 const BIOMES = [
     "WATER",
+    "BEACH",
     "PLAIN",
     "MOUNTAIN"
 ]
