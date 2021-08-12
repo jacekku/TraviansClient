@@ -92,18 +92,20 @@ const mvmspeed = 1
 
 function movePlayer() {
     if(!terrain)return
+    localX = X
+    localY = Y
     if (keyCode === LEFT_ARROW) {
-        X -= mvmspeed
+        localX -= mvmspeed
     } else if (keyCode === RIGHT_ARROW) {
-        X += mvmspeed
+        localX += mvmspeed
     } else if (keyCode === UP_ARROW) {
-        Y -= mvmspeed
+        localY -= mvmspeed
     } else if (keyCode === DOWN_ARROW) {
-        Y += mvmspeed
+        localY += mvmspeed
     }
-    X = clampNumber(X, 0, terrain.width - 1)
-    Y = clampNumber(Y, 0, terrain.height - 1)
-    sendMovePlayer(playerName, X, Y)
+    localX = clampNumber(localX, 0, terrain.width - 1)
+    localY = clampNumber(localY, 0, terrain.height - 1)
+    sendMovePlayer(playerName, localX, localY)
 }
 
 function sendMovePlayer(name, x, y){
