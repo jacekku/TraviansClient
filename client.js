@@ -4,7 +4,7 @@ let connected = false;
 let X = 1,
   Y = 1;
 let playerName;
-terrain = "";
+terrain = {};
 players = "";
 
 function connect() {
@@ -13,21 +13,26 @@ function connect() {
   // websocket = new WebSocket('wss://traviansserver.herokuapp.com/ws');
   socket = io("http://localhost:3000");
   socket.on("connect", onConnected);
-  socket.on("message", (data) => console.warn("socket.on message: " + data));
+  socket.on("message", (data) => console.log("socket.on message: " + data));
   socket.on("disconnected", handleDisconnected);
   socket.on("players:all", (data) => {
-    console.log(data);
+    updatePlayers(data);
   });
 
   socket.on("players:connect", handleConnected);
   socket.on("terrain:info", (data) => {
-    console.log(data);
+    const chunks = terrain.chunks;
     terrain = data;
+    terrain.chunks = chunks;
   });
-}
+  socket.on("terrain:chunk", (data) => {
+    terrain.chunks = data;
+  });
 
-function testWS(string) {
-  socket.emit(string);
+  socket.on("players:update", () => {
+    socket.emit("players:requestUpdate", { player: { name: playerName } });
+  });
+  socket.on("players:requestUpdate", (data) => updatePlayers(data));
 }
 
 function onConnected() {
@@ -37,15 +42,7 @@ function onConnected() {
     },
   });
   socket.emit("terrain:info");
-}
-
-function move(newPosition) {
-  socket.emit("players:move", {
-    player: {
-      name: playerName,
-    },
-    move: newPosition,
-  });
+  socket.emit("terrain:chunk", { player: { name: playerName } });
 }
 
 function handleConnected() {
@@ -68,32 +65,6 @@ function handleDisconnected() {
   login.classList.remove("hidden");
 }
 
-// function handleGetMessage(event) {
-//   console.log(event);
-//   if (event.data == "ERROR") {
-//     connected = false;
-//     return;
-//   }
-//   if (event.data == "CONNECTED") {
-//     connected = true;
-//     handleConnected();
-//     return;
-//   }
-//   console.log(event.data);
-//   const incomingData = JSON.parse(event.data);
-//   if (incomingData.type == "TERRAIN") {
-//     terrain = incomingData.data;
-//     return;
-//   }
-//   if (incomingData.type == "PLAYERS") {
-//     players = incomingData.data;
-//     const thisPlayer = players.find((pl) => pl.name == playerName);
-//     X = thisPlayer.x;
-//     Y = thisPlayer.y;
-//     return;
-//   }
-// }
-
 function keyPressed() {
   movePlayer();
 }
@@ -112,6 +83,8 @@ function movePlayer() {
     localY -= mvmspeed;
   } else if (keyCode === DOWN_ARROW) {
     localY += mvmspeed;
+  } else {
+    return;
   }
   localX = clampNumber(localX, 0, terrain.width - 1);
   localY = clampNumber(localY, 0, terrain.height - 1);
@@ -124,9 +97,16 @@ function sendMovePlayer(name, x, y) {
       player: { name },
       move: { x, y },
     });
+    socket.emit("terrain:chunk", { player: { name: playerName } });
   }
 }
 
 function clampNumber(num, min, max) {
   return Math.min(Math.max(num, min), max);
+}
+function updatePlayers(newPlayers) {
+  players = newPlayers;
+  thisPlayer = players.find((player_) => playerName === player_.name);
+  X = thisPlayer.x;
+  Y = thisPlayer.y;
 }

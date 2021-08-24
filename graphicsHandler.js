@@ -122,7 +122,7 @@ function setup() {
 
 function draw() {
   background(0);
-  if (terrain) {
+  if (terrain && terrain.chunks) {
     const frustum = getFrustum(X, Y);
     const pointer = getPointer(frustum);
     translate(-frustum.x * blockSize, -frustum.y * blockSize);
