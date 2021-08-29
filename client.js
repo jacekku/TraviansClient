@@ -10,8 +10,7 @@ players = "";
 function connect() {
   name = document.getElementById("name");
   playerName = name.value;
-  // websocket = new WebSocket('wss://traviansserver.herokuapp.com/ws');
-  socket = io("http://localhost:3000");
+  socket = io("https://warlordsonline.net:3000");
   socket.on("connect", onConnected);
   socket.on("message", (data) => console.log("socket.on message: " + data));
   socket.on("disconnected", handleDisconnected);
