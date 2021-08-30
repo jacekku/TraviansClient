@@ -70,20 +70,37 @@ function keyPressed() {
 
 const mvmspeed = 1;
 
-function movePlayer() {
+function movePlayer(block) {
   if (!terrain) return;
   localX = X;
   localY = Y;
-  if (keyCode === LEFT_ARROW) {
-    localX -= mvmspeed;
-  } else if (keyCode === RIGHT_ARROW) {
-    localX += mvmspeed;
-  } else if (keyCode === UP_ARROW) {
-    localY -= mvmspeed;
-  } else if (keyCode === DOWN_ARROW) {
-    localY += mvmspeed;
+
+  if (!block) {
+    if (keyCode === LEFT_ARROW) {
+      localX -= mvmspeed;
+    }
+    if (keyCode === RIGHT_ARROW) {
+      localX += mvmspeed;
+    }
+    if (keyCode === UP_ARROW) {
+      localY -= mvmspeed;
+    }
+    if (keyCode === DOWN_ARROW) {
+      localY += mvmspeed;
+    }
   } else {
-    return;
+    if (block.x === localX - 1) {
+      localX -= mvmspeed;
+    }
+    if (block.x === localX + 1) {
+      localX += mvmspeed;
+    }
+    if (block.y === localY - 1) {
+      localY -= mvmspeed;
+    }
+    if (block.y === localY + 1) {
+      localY += mvmspeed;
+    }
   }
   localX = clampNumber(localX, 0, terrain.width - 1);
   localY = clampNumber(localY, 0, terrain.height - 1);

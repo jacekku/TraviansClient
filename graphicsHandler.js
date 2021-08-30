@@ -5,9 +5,9 @@ function drawChunk(chunk) {
   const chunkSize = terrain.chunkSize;
   const chunkX = chunk.x * blockSize;
   const chunkY = chunk.y * blockSize;
-  // strokeWeight(5)
-  // stroke("#f00")
-  // fill("#aaa")
+  // strokeWeight(5);
+  // stroke("#f00");
+  // fill("#aaa");
   rect(chunkX, chunkY, chunkSize * blockSize, chunkSize * blockSize);
 }
 
@@ -112,7 +112,8 @@ function preload() {
 }
 
 function setup() {
-  let c = createCanvas(500, 500);
+  const size = Math.min(500, window.innerWidth);
+  let c = createCanvas(size, size);
 
   blockSize = width / frustumSize;
   c.parent("game");

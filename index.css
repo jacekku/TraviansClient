@@ -1,38 +1,53 @@
 .visible {
-    visibility: visible;
+  visibility: visible;
 }
 .hidden {
-    visibility: hidden;
+  visibility: hidden;
 }
 
-
 .menu {
-    width: 120px;
-    box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-    position: absolute;
-    display: none;
+  width: 120px;
+  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  display: none;
+  z-index: 10;
 }
 
 .menu .menu-options {
-    list-style: none;
-    padding: 10px 0;
+  list-style: none;
+  padding: 10px 0;
 }
 
 .menu .menu-options .menu-option {
-    font-weight: 500;
-    font-size: 14px;
-    padding: 10px 40px 10px 20px;
-    cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 40px 10px 20px;
+  cursor: pointer;
 }
 
 .menu .menu-options {
-    background: rgb(255, 255, 255);
+  background: rgb(255, 255, 255);
 }
 .menu-option:hover {
-    background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .menu-header {
-    text-align: center;
-    text-decoration: underline;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.game {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }

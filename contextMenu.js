@@ -1,87 +1,130 @@
 let menuVisible = false;
-menu = ""
-menuOptions = ""
-selectedBlock = {}
-lockedBlock = {}
-
+menu = "";
+menuOptions = "";
+selectedBlock = {};
+lockedBlock = {};
 
 function showOptions(option) {
-    menuOptions.innerHTML = ''
-    menuOptions.appendChild(createHeader(option))
-    switch (option) {
-        case "DEER":
-            menuOptions.appendChild(createLi("HUNT", console.log))
-            break;
-        case "IRON":
-        case "COPPER":
-        case "GOLD":
-            menuOptions.appendChild(createLi("MINE", console.log))
-            break;
-        case "FISH":
-            menuOptions.appendChild(createLi("FISH", console.log))
-            break;
-        case "FOREST":
-            menuOptions.appendChild(createLi("CHOP WOOD", console.log))
-            break;
-    }
+  menuOptions.innerHTML = "";
+  menuOptions.appendChild(createHeader(option));
+  switch (option) {
+    case "DEER":
+      menuOptions.appendChild(createLi("HUNT", console.log, "HUNT"));
+      break;
+    case "IRON":
+    case "COPPER":
+    case "GOLD":
+      menuOptions.appendChild(createLi("MINE", console.log, "MINE"));
+      break;
+    case "FISH":
+      menuOptions.appendChild(createLi("FISH", console.log, "FISH"));
+      break;
+    case "FOREST":
+      menuOptions.appendChild(createLi("CHOP WOOD", console.log, "CHOP WOOD"));
+      break;
+  }
+  return true;
 }
 
-function createLi(text, callback = showOptions) {
-    const li = document.createElement('li')
-    li.classList.add('menu-option')
-    li.addEventListener('click', (a) => callback(a.target.innerHTML))
-    li.innerHTML = text
-    return li
+function createLi(text, callback = () => {}, ...callbackArgs) {
+  const li = document.createElement("li");
+  li.classList.add("menu-option");
+  li.addEventListener("click", (a) => {
+    keepOpen = callback(...callbackArgs);
+    toggleMenu("hide");
+    if (keepOpen) {
+      toggleMenu("show");
+    }
+  });
+  li.innerHTML = text;
+  return li;
 }
 
 function createHeader(text) {
-    const p = document.createElement('div')
-    p.classList.add('menu-header')
-    p.innerHTML = text
-    return p
+  const p = document.createElement("div");
+  p.classList.add("menu-header");
+  p.innerHTML = text;
+  return p;
 }
 
-function addBlockInfo(block) {
-    menuOptions.innerHTML = ''
-    menuOptions.appendChild(createHeader('Block Info'))
-    block.animals && ANIMALS[block.animals] != "NO_ANIMAL" ? menuOptions.appendChild(createLi(ANIMALS[block.animals])) : null
-    block.moisture ? menuOptions.appendChild(createLi(MOISTURE[block.moisture])) : null
-    block.type ? menuOptions.appendChild(createLi(BIOMES[block.type])) : null
-    block.materialRichness ? menuOptions.appendChild(createLi(MATERIAL_RICHNESS[block.materialRichness])) : null
+function blockIsAdjacentToPlayer(block, X, Y) {
+  return (
+    (block.x === X - 1 || block.x === X + 1 || block.x === X) &&
+    (block.y === Y - 1 || block.y === Y + 1 || block.y === Y)
+  );
 }
 
+function showBlockOptions(block) {
+  menuOptions.innerHTML = "";
+  menuOptions.appendChild(createHeader("Block Options"));
 
-const toggleMenu = command => {
-    menu.style.display = command === "show" ? "block" : "none";
-    menuVisible = !menuVisible;
+  if (blockIsAdjacentToPlayer(block, X, Y))
+    menuOptions.appendChild(createLi("Move here", movePlayer, block));
+  menuOptions.appendChild(createLi("Actions", showBlockInfo, block));
+}
+
+function showBlockInfo(block) {
+  menuOptions.innerHTML = "";
+  menuOptions.appendChild(createHeader("Block Info"));
+
+  const animal = ANIMALS[block.animals];
+  const moisture = MOISTURE[block.moisture];
+  const materialRichness = MATERIAL_RICHNESS[block.materialRichness];
+  const blockType = BIOMES[block.type];
+
+  animal != "NONE"
+    ? menuOptions.appendChild(createLi(animal, showOptions, animal))
+    : null;
+  moisture != "NONE"
+    ? menuOptions.appendChild(createLi(moisture, showOptions, moisture))
+    : null;
+  materialRichness != "NONE"
+    ? menuOptions.appendChild(
+        createLi(materialRichness, showOptions, materialRichness)
+      )
+    : null;
+  blockType
+    ? menuOptions.appendChild(createLi(blockType, showOptions, blockType))
+    : null;
+  return true;
+}
+
+const toggleMenu = (command) => {
+  menu.style.display = command === "show" ? "block" : "none";
+  menuVisible = !menuVisible;
 };
 
-const setPosition = ({
-    top,
-    left
-}) => {
-    menu.style.left = `${left}px`;
-    menu.style.top = `${top}px`;
-    toggleMenu("show");
+const setPosition = ({ top, left }) => {
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
+  toggleMenu("show");
 };
 
-window.addEventListener("click", e => {
-    if(![...e.path].includes(menu))toggleMenu("hide");
-});
-
-window.addEventListener("contextmenu", e => {
+function addEventListeners(gameDiv) {
+  function contextMenuEvent(e) {
     e.preventDefault();
     const origin = {
-        left: e.pageX,
-        top: e.pageY
+      left: e.pageX || e.changedTouches[0].pageX,
+      top: e.pageY || e.changedTouches[0].pageY,
     };
     setPosition(origin);
-    lockedBlock = selectedBlock
-    addBlockInfo(lockedBlock)
+    lockedBlock = selectedBlock;
+    showBlockOptions(lockedBlock);
     return false;
-});
+  }
 
-window.addEventListener('load', _ => {
-    menu = document.querySelector(".menu");
-    menuOptions = document.querySelector(".menu-options");
-})
+  gameDiv.addEventListener("dblclick", contextMenuEvent);
+  gameDiv.addEventListener("touchend", contextMenuEvent);
+
+  window.addEventListener("click", (e) => {
+    if (![...e.path].includes(menu)) {
+      if (menuVisible) toggleMenu("hide");
+    }
+  });
+}
+window.addEventListener("load", (_) => {
+  menu = document.querySelector(".menu");
+  menuOptions = document.querySelector(".menu-options");
+  gameDiv = document.querySelector("#game");
+  addEventListeners(gameDiv);
+});
