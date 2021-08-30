@@ -74,7 +74,6 @@ function movePlayer(block) {
   if (!terrain) return;
   localX = X;
   localY = Y;
-
   if (!block) {
     if (keyCode === LEFT_ARROW) {
       localX -= mvmspeed;

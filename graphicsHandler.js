@@ -125,7 +125,8 @@ function draw() {
   background(0);
   if (terrain && terrain.chunks) {
     const frustum = getFrustum(X, Y);
-    const pointer = getPointer(frustum);
+    pointer = getPointer(frustum);
+
     translate(-frustum.x * blockSize, -frustum.y * blockSize);
     const chunks = terrain.chunks;
     for (chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
@@ -136,12 +137,6 @@ function draw() {
       for (blockIndex = 0; blockIndex < chunk.blocks.length; blockIndex++) {
         const block = chunk.blocks[blockIndex];
         drawBlock(block);
-        if (
-          block.x == pointer.x / blockSize &&
-          block.y == pointer.y / blockSize
-        ) {
-          selectedBlock = block;
-        }
       }
     }
 
@@ -181,8 +176,8 @@ function getFrustum(X, Y) {
 
 function getPointer(frustum) {
   return {
-    x: Math.floor(frustum.x + mouseX / blockSize) * blockSize,
-    y: Math.floor(frustum.y + mouseY / blockSize) * blockSize,
+    x: Math.floor(frustum.x + (mouseX | 0) / blockSize) * blockSize,
+    y: Math.floor(frustum.y + (mouseY | 0) / blockSize) * blockSize,
   };
 }
 
@@ -233,18 +228,4 @@ function getBlockColor(block) {
 
 function clampNumber(num, min, max) {
   return Math.min(Math.max(num, min), max);
-}
-
-function movePlayer() {
-  if (keyCode === LEFT_ARROW) {
-    X -= 1;
-  } else if (keyCode === RIGHT_ARROW) {
-    X += 1;
-  } else if (keyCode === UP_ARROW) {
-    Y -= 1;
-  } else if (keyCode === DOWN_ARROW) {
-    Y += 1;
-  }
-  X = clampNumber(X, 0, terrain.width - 1);
-  Y = clampNumber(Y, 0, terrain.height - 1);
 }

@@ -58,8 +58,9 @@ function showBlockOptions(block) {
   menuOptions.innerHTML = "";
   menuOptions.appendChild(createHeader("Block Options"));
 
-  if (blockIsAdjacentToPlayer(block, X, Y))
+  if (blockIsAdjacentToPlayer(block, X, Y)) {
     menuOptions.appendChild(createLi("Move here", movePlayer, block));
+  }
   menuOptions.appendChild(createLi("Actions", showBlockInfo, block));
 }
 
@@ -100,6 +101,15 @@ const setPosition = ({ top, left }) => {
   toggleMenu("show");
 };
 
+function findBlock(pointer) {
+  const blockX = Math.round(pointer.x / blockSize);
+  const blockY = Math.round(pointer.y / blockSize);
+  const chunkX = Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize;
+  const chunkY = Math.floor(blockY / terrain.chunkSize) * terrain.chunkSize;
+  const chunk = terrain.chunks.find((ch) => ch.x === chunkX && ch.y === chunkY);
+  return chunk.blocks.find((block) => block.x === blockX && block.y === blockY);
+}
+
 function addEventListeners(gameDiv) {
   function contextMenuEvent(e) {
     e.preventDefault();
@@ -107,18 +117,20 @@ function addEventListeners(gameDiv) {
       left: e.pageX || e.changedTouches[0].pageX,
       top: e.pageY || e.changedTouches[0].pageY,
     };
+
+    selectedBlock = findBlock(pointer);
     setPosition(origin);
     lockedBlock = selectedBlock;
     showBlockOptions(lockedBlock);
     return false;
   }
 
-  gameDiv.addEventListener("dblclick", contextMenuEvent);
+  gameDiv.addEventListener("contextmenu", contextMenuEvent);
   gameDiv.addEventListener("touchend", contextMenuEvent);
 
   window.addEventListener("click", (e) => {
     if (![...e.path].includes(menu)) {
-      if (menuVisible) toggleMenu("hide");
+      toggleMenu("hide");
     }
   });
 }
