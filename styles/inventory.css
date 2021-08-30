@@ -1,0 +1,108 @@
+:root {
+  --item-size: 50px;
+  --col-size: 4;
+}
+
+.icon-bar img {
+  image-rendering: pixelated;
+}
+
+.inventory {
+  overflow: hidden;
+}
+
+.items {
+  display: block;
+  width: calc(var(--item-size) * var(--col-size));
+  float: left;
+  padding-left: 10%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    ". . . ."
+    ". . . ."
+    ". . . ."
+    ". . . .";
+}
+
+.item {
+  width: var(--item-size);
+  height: var(--item-size);
+  border: 1px solid black;
+}
+
+.item img {
+  width: inherit;
+  image-rendering: pixelated;
+}
+
+.character {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "pauldrons head gauntlets"
+    "cape chest shirt"
+    "boots legs ring"
+    "trinket mainhand offhand";
+  float: left;
+}
+
+.chest {
+  grid-area: chest;
+}
+
+.legs {
+  grid-area: legs;
+}
+
+.mainhand {
+  grid-area: mainhand;
+}
+
+.pauldrons {
+  grid-area: pauldrons;
+}
+
+.head {
+  grid-area: head;
+}
+
+.gauntlets {
+  grid-area: gauntlets;
+}
+
+.cape {
+  grid-area: cape;
+}
+
+.shirt {
+  grid-area: shirt;
+}
+
+.boots {
+  grid-area: boots;
+}
+
+.offhand {
+  grid-area: offhand;
+}
+
+.trinket {
+  grid-area: trinket;
+}
+
+.ring {
+  grid-area: ring;
+}
+
+.character div {
+  width: var(--item-size);
+  height: var(--item-size);
+  border: 1px solid red;
+  float: left;
+}
