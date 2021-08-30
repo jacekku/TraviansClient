@@ -25,7 +25,10 @@ function connect() {
     terrain.chunks = chunks;
   });
   socket.on("terrain:chunk", (data) => {
-    terrain.chunks = data;
+    const newChunks = data;
+    if (!newChunks) return;
+    if (!terrain.chunks) terrain.chunks = [];
+    terrain.chunks.push(...newChunks);
   });
 
   socket.on("players:update", () => {
@@ -41,7 +44,7 @@ function onConnected() {
     },
   });
   socket.emit("terrain:info");
-  socket.emit("terrain:chunk", { player: { name: playerName } });
+  socket.emit("terrain:chunk", { player: { name: playerName }, chunks: [] });
 }
 
 function handleConnected() {
@@ -112,7 +115,10 @@ function sendMovePlayer(name, x, y) {
       player: { name },
       move: { x, y },
     });
-    socket.emit("terrain:chunk", { player: { name: playerName } });
+    socket.emit("terrain:chunk", {
+      player: { name: playerName },
+      chunks: terrain.chunks.map((chunk) => chunk.id),
+    });
   }
 }
 
