@@ -9,18 +9,26 @@ function showOptions(option) {
   menuOptions.appendChild(createHeader(option));
   switch (option) {
     case "DEER":
-      menuOptions.appendChild(createLi("HUNT", console.log, "HUNT"));
+      menuOptions.appendChild(
+        createLi("HUNT", sendCommand, "HUNT", lockedBlock)
+      );
       break;
     case "IRON":
     case "COPPER":
     case "GOLD":
-      menuOptions.appendChild(createLi("MINE", console.log, "MINE"));
+      menuOptions.appendChild(
+        createLi("MINE", sendCommand, "MINE", lockedBlock)
+      );
       break;
     case "FISH":
-      menuOptions.appendChild(createLi("FISH", console.log, "FISH"));
+      menuOptions.appendChild(
+        createLi("FISH", sendCommand, "FISH", lockedBlock)
+      );
       break;
     case "FOREST":
-      menuOptions.appendChild(createLi("CHOP WOOD", console.log, "CHOP WOOD"));
+      menuOptions.appendChild(
+        createLi("CHOP WOOD", sendCommand, "CHOP WOOD", lockedBlock)
+      );
       break;
   }
   return true;
