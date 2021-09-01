@@ -10,7 +10,8 @@ players = "";
 function connect() {
   name = document.getElementById("name");
   playerName = name.value;
-  socket = io("https://warlordsonline.net:3000");
+  // socket = io("https://warlordsonline.net:3000");
+  socket = io("http://localhost:3000");
   socket.on("connect", onConnected);
   socket.on("message", (data) => console.log("socket.on message: " + data));
   socket.on("disconnected", handleDisconnected);
@@ -35,6 +36,7 @@ function connect() {
     socket.emit("players:requestUpdate", { player: { name: playerName } });
   });
   socket.on("players:requestUpdate", (data) => updatePlayers(data));
+  socket.on("items:update", updateInventory);
 }
 
 function onConnected() {
@@ -44,6 +46,7 @@ function onConnected() {
     },
   });
   socket.emit("terrain:info");
+  socket.emit("items:update", { player: { name: playerName } });
   socket.emit("terrain:chunk", { player: { name: playerName }, chunks: [] });
 }
 
