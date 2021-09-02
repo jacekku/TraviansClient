@@ -37,6 +37,7 @@ function connect() {
   });
   socket.on("players:requestUpdate", (data) => updatePlayers(data));
   socket.on("items:update", updateInventory);
+  socket.on("exception", (data) => alert(JSON.stringify(data)));
 }
 
 function onConnected() {
