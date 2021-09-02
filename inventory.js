@@ -3,28 +3,60 @@ showInventory = true;
 ITEMS = [
   {
     id: 0,
-    imgSource: "assets/items/wood.png",
+    maxStackSize: 100,
     name: "wood",
   },
   {
     id: 1,
-    imgSource: "assets/items/meat.png",
+    maxStackSize: 100,
     name: "meat",
   },
   {
     id: 2,
-    imgSource: "assets/items/copper_ore.png",
+    maxStackSize: 100,
     name: "copper_ore",
   },
   {
     id: 3,
-    imgSource: "assets/items/iron_ore.png",
+    maxStackSize: 100,
     name: "iron_ore",
   },
   {
     id: 4,
-    imgSource: "assets/items/gold_ore.png",
+    maxStackSize: 100,
     name: "gold_ore",
+  },
+  {
+    id: 5,
+    maxStackSize: 100,
+    name: "copper_bar",
+    craftable: true,
+    sourceItems: ["copper_ore", "wood"],
+    facility: ["inventory-craft"],
+  },
+  {
+    id: 6,
+    maxStackSize: 100,
+    name: "iron_bar",
+    craftable: true,
+    sourceItems: ["iron_ore", "wood"],
+    facility: ["inventory-craft"],
+  },
+  {
+    id: 7,
+    maxStackSize: 100,
+    name: "gold_bar",
+    craftable: true,
+    sourceItems: ["gold_ore", "wood"],
+    facility: ["inventory-craft"],
+  },
+  {
+    id: 8,
+    maxStackSize: 100,
+    name: "cooked_meat",
+    craftable: true,
+    sourceItems: ["meat", "wood"],
+    facility: ["inventory-craft"],
   },
 ];
 
@@ -33,39 +65,55 @@ function sendCommand(command, block) {
     case "CHOP WOOD":
       socket.emit("items:add", {
         player: thisPlayer,
-        item: { id: 0 },
+        item: ITEMS.find((i) => i.name === "wood"),
       });
       break;
     case "FISH":
     case "HUNT":
       socket.emit("items:add", {
         player: thisPlayer,
-        item: { id: 1 },
+        item: ITEMS.find((i) => i.name === "meat"),
       });
       break;
     case "MINE":
-      ore_id = ITEMS.find(
+      ore = ITEMS.find(
         (i) =>
           i.name ===
           MATERIAL_RICHNESS[block.materialRichness].toLowerCase() + "_ore"
-      ).id;
-      if (ore_id)
+      );
+      if (ore)
         socket.emit("items:add", {
           player: thisPlayer,
-          item: { id: ore_id },
+          item: ore,
         });
       break;
   }
+}
+
+function craftItem(itemName) {
+  const itemDefinition = ITEMS.find((i) => i.name === itemName);
+
+  socket.emit("items:craft", {
+    player: thisPlayer,
+    itemToCraft: itemDefinition,
+  });
+}
+
+function getItemPath(itemName) {
+  return "assets/items/" + itemName + ".png" || "assets/knight.png";
 }
 
 function updateInventory(inventory) {
   console.log(inventory);
   const itemsElement = inventoryElement.children[1].children;
   inventory.items.forEach((item, index) => {
-    if (item)
-      itemsElement[index].children[0].src = ITEMS.find(
-        (i) => i.id === item.id
-      ).imgSource;
+    if (item) {
+      itemsElement[index].children[0].src = getItemPath(
+        ITEMS.find((i) => i.id === item.id).name
+      );
+    } else {
+      itemsElement[index].children[0].src = "assets/blank.png";
+    }
     console.log(itemsElement[index].src);
   });
 }
