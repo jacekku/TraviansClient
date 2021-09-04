@@ -3,18 +3,17 @@
   --col-size: 4;
 }
 
-.icon-bar img {
-  image-rendering: pixelated;
+.inventory {
+  display: flex;
 }
 
-.inventory {
-  overflow: hidden;
+.craft-possibility {
+  border: 1px solid gray;
+  display: flex;
 }
 
 .items {
-  display: block;
   width: calc(var(--item-size) * var(--col-size));
-  float: left;
   padding-left: 10%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -25,17 +24,7 @@
     ". . . ."
     ". . . ."
     ". . . .";
-}
-
-.item {
-  width: var(--item-size);
-  height: var(--item-size);
-  border: 1px solid black;
-}
-
-.item img {
-  width: inherit;
-  image-rendering: pixelated;
+  float: right;
 }
 
 .character {
@@ -50,6 +39,28 @@
     "boots legs ring"
     "trinket mainhand offhand";
   float: left;
+}
+
+.item {
+  width: var(--item-size);
+  height: var(--item-size);
+  border: 1px solid black;
+  position: relative;
+}
+
+.item img {
+  width: inherit;
+  image-rendering: pixelated;
+}
+
+.item p {
+  /* Top right text */
+  position: absolute;
+  top: 18px;
+  right: 1px;
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .chest {
@@ -104,5 +115,14 @@
   width: var(--item-size);
   height: var(--item-size);
   border: 1px solid red;
-  float: left;
+}
+
+.container .inventory {
+  position: absolute;
+}
+.container .crafting {
+  position: absolute;
+}
+.container .building {
+  position: absolute;
 }
