@@ -37,7 +37,7 @@ function connect() {
   });
   socket.on("players:requestUpdate", (data) => updatePlayers(data));
   socket.on("items:update", updateInventory);
-  socket.on("exception", (data) => alert(JSON.stringify(data)));
+  socket.on("exception", (data) => alert(JSON.stringify(data.message)));
 }
 
 function onConnected() {
@@ -46,8 +46,12 @@ function onConnected() {
       name: playerName,
     },
   });
+  socket.emit("players:requestUpdate", { player: { name: playerName } });
+  fetch("http://localhost:3000/state/definitions")
+    .then((data) => data.json())
+    .then((data) => (ITEMS = data.itemDefinitions))
+    .then((_) => socket.emit("items:update", { player: { name: playerName } }));
   socket.emit("terrain:info");
-  socket.emit("items:update", { player: { name: playerName } });
   socket.emit("terrain:chunk", { player: { name: playerName }, chunks: [] });
 }
 
