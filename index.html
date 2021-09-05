@@ -29,7 +29,10 @@
 
     <div class="menu">
         <ul class="menu-options"> </ul>
-    </div>
+    </div>    
+    <button onclick="equipHelmet()">equipItem</button>
+  <button onclick="unequipHelmet()">unequipItem</button>
+
     <div class="icon-bar">
         <img class="inventory-toggle" src="assets/inventory.png" width="50px">
         <img class="crafting-toggle" src="assets/craft.png" width="50px">
@@ -40,18 +43,18 @@
         <div class="inventory" style="visibility: hidden;">
 
             <div class="character">
-                <div class="chest"></div>
-                <div class="legs"></div>
-                <div class="pauldrons"></div>
-                <div class="head"></div>
-                <div class="gauntlets"></div>
-                <div class="cape"></div>
-                <div class="shirt"></div>
-                <div class="boots"></div>
-                <div class="mainhand"></div>
-                <div class="offhand"></div>
-                <div class="trinket"></div>
-                <div class="ring"></div>
+                <div class="chest item"><img src="assets/items/placeholder/chest.png"></div>
+                <div class="legs item"><img src="assets/items/placeholder/legs.png"></div>
+                <div class="pauldrons item"><img src="assets/items/placeholder/pauldrons.png"></div>
+                <div class="head item"><img src="assets/items/placeholder/head.png"></div>
+                <div class="gauntlets item"><img src="assets/items/placeholder/gauntlets.png"></div>
+                <div class="cape item"><img src="assets/items/placeholder/cape.png"></div>
+                <div class="shirt item"><img src="assets/items/placeholder/shirt.png"></div>
+                <div class="boots item"><img src="assets/items/placeholder/boots.png"></div>
+                <div class="mainhand item"><img src="assets/items/placeholder/mainhand.png"></div>
+                <div class="offhand item"><img src="assets/items/placeholder/offhand.png"></div>
+                <div class="trinket item"><img src="assets/items/placeholder/trinket.png"></div>
+                <div class="ring item"><img src="assets/items/placeholder/ring.png"></div>
             </div>
 
             <div class="items">
@@ -110,6 +113,24 @@
         </div>
         <div class="building" style="visibility: hidden;">building mode coming soon...</div>
     </div>
+    <script>
+        function equipHelmet() {
+            socket.emit("items:equip", {
+                player:thisPlayer,
+                itemToEquip: {
+                    name: "copper_helmet"
+                }
+            })
+        }
+        function unequipHelmet() {
+            socket.emit("items:unequip", {
+                player:thisPlayer,
+                itemToUnequip: {
+                    name: "copper_helmet"
+                }
+            })
+        }
+    </script>
 </body>
 
 </html>
