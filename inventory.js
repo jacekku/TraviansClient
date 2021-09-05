@@ -67,6 +67,16 @@ function showInventory() {
       itemsElement[index].children[1].innerHTML = "";
     }
   });
+  Object.keys(thisPlayer.inventory.equiped).forEach((type) => {
+    const element = document.querySelector(`.${type}`);
+    if (thisPlayer.inventory.equiped[type].name) {
+      element.firstChild.src = getItemPath(
+        thisPlayer.inventory.equiped[type].name
+      );
+    } else {
+      element.firstChild.src = "/assets/items/placeholder/" + type + ".png";
+    }
+  });
 }
 
 window.addEventListener("load", (e) => {
@@ -136,8 +146,8 @@ function showPossibleCrafting() {
     });
     craftPossibility.appendChild(resultElement);
     craftPossibility.appendChild(createArrowElement());
-    craftable.sourceItems.forEach((itemName) =>
-      craftPossibility.appendChild(createItemElement(itemName))
+    craftable.sourceItems.forEach((item) =>
+      craftPossibility.appendChild(createSourceItemElement(item))
     );
 
     craftingPossibilitiesElement.appendChild(craftPossibility);
@@ -149,6 +159,13 @@ function createDivElement(...classes) {
   el.classList.add(...classes);
   return el;
 }
+function createSourceItemElement(item) {
+  const el = createItemElement(item.name);
+  const p = document.createElement("p");
+  p.innerHTML = item.requiredAmount;
+  el.appendChild(p);
+  return el;
+}
 
 function createItemElement(itemName) {
   const el = createDivElement("item");
@@ -157,6 +174,7 @@ function createItemElement(itemName) {
   el.appendChild(img);
   return el;
 }
+
 function createArrowElement() {
   const el = createDivElement("item");
   const img = document.createElement("img");
@@ -177,8 +195,15 @@ function collapseInventory(inventory) {
 }
 
 function inventoryHasAllSourceItems(collapsedInventory, sourceItems) {
+  console.log(sourceItems.map((item) => collapsedInventory[item.name]));
   return (
     sourceItems.length ===
-    sourceItems.map((item) => collapsedInventory[item]).filter(Boolean).length
+    sourceItems
+      .map(
+        (item) =>
+          collapsedInventory[item.name] &&
+          collapsedInventory[item.name] >= item.requiredAmount
+      )
+      .filter(Boolean).length
   );
 }
