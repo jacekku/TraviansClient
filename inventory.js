@@ -264,8 +264,6 @@ function drop(ev) {
     ev.dataTransfer.getData("text"),
     ev.target.parentElement.id
   );
-  console.log(action, sourceSpot, targetSpot);
-  console.log(action, typeof sourceSpot, typeof targetSpot);
   if (action === "equip") {
     if (thisPlayer.inventory.items[sourceSpot].name)
       equipItem(thisPlayer.inventory.items[sourceSpot]);

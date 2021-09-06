@@ -6,12 +6,12 @@ let X = 1,
 let playerName;
 terrain = {};
 players = "";
+const URL = "https://warlordsonline.net:3000";
 
 function connect() {
   name = document.getElementById("name");
   playerName = name.value;
-  // socket = io("https://warlordsonline.net:3000");
-  socket = io("http://localhost:3000");
+  socket = io(URL);
   socket.on("connect", onConnected);
   socket.on("message", (data) => console.log("socket.on message: " + data));
   socket.on("disconnected", handleDisconnected);
@@ -47,7 +47,7 @@ function onConnected() {
     },
   });
   socket.emit("players:requestUpdate", { player: { name: playerName } });
-  fetch("http://localhost:3000/state/definitions")
+  fetch(URL + "/state/definitions")
     .then((data) => data.json())
     .then((data) => (ITEMS = data.itemDefinitions))
     .then((_) => socket.emit("items:update", { player: { name: playerName } }));
