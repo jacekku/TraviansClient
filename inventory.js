@@ -267,16 +267,12 @@ function drop(ev) {
   console.log(action, sourceSpot, targetSpot);
   console.log(action, typeof sourceSpot, typeof targetSpot);
   if (action === "equip") {
-    console.log(
-      "equping " +
-        thisPlayer.inventory.items[sourceSpot].name +
-        " to " +
-        targetSpot[0]
-    );
-    equipItem(thisPlayer.inventory.items[sourceSpot]);
+    if (thisPlayer.inventory.items[sourceSpot].name)
+      equipItem(thisPlayer.inventory.items[sourceSpot]);
   }
   if (action === "unequip") {
-    unequipItem(thisPlayer.inventory.equiped[sourceSpot]);
+    if (thisPlayer.inventory.equiped[sourceSpot].name)
+      unequipItem(thisPlayer.inventory.equiped[sourceSpot]);
   }
 
   if (action === "move") {
