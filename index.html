@@ -30,8 +30,6 @@
     <div class="menu">
         <ul class="menu-options"> </ul>
     </div>    
-    <button onclick="equipHelmet()">equipItem</button>
-  <button onclick="unequipHelmet()">unequipItem</button>
 
     <div class="icon-bar">
         <img class="inventory-toggle" src="assets/inventory.png" width="50px">
@@ -56,9 +54,8 @@
                 <div class="trinket item"><img src="assets/items/placeholder/trinket.png"></div>
                 <div class="ring item"><img src="assets/items/placeholder/ring.png"></div>
             </div>
-
             <div class="items">
-                <div class="item" id=0><img src="assets/blank.png">
+                <div class="item" id=0 ><img src="assets/blank.png">
                     <p class="stackSize"></p>
                 </div>
                 <div class="item" id=1><img src="assets/blank.png">
@@ -113,24 +110,7 @@
         </div>
         <div class="building" style="visibility: hidden;">building mode coming soon...</div>
     </div>
-    <script>
-        function equipHelmet() {
-            socket.emit("items:equip", {
-                player:thisPlayer,
-                itemToEquip: {
-                    name: "copper_helmet"
-                }
-            })
-        }
-        function unequipHelmet() {
-            socket.emit("items:unequip", {
-                player:thisPlayer,
-                itemToUnequip: {
-                    name: "copper_helmet"
-                }
-            })
-        }
-    </script>
+  
 </body>
 
 </html>
