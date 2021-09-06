@@ -6,7 +6,7 @@ let X = 1,
 let playerName;
 terrain = {};
 players = "";
-const URL = "http://localhost:3000";
+const URL = "https://warlordsonline.net:3000";
 
 function connect() {
   name = document.getElementById("name");

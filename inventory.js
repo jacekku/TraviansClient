@@ -30,6 +30,12 @@ function sendCommand(command, block) {
           item: ore,
         });
       break;
+    case "GATHER SAND":
+      socket.emit("items:add", {
+        player: thisPlayer,
+        item: ITEMS.find((i) => i.name === "sand"),
+      });
+      break;
   }
 }
 
@@ -156,6 +162,10 @@ function showPossibleCrafting() {
     ".crafting-possibilities"
   );
   craftingPossibilitiesElement.innerHTML = "";
+  if (craftableItems.length === 0) {
+    craftingPossibilitiesElement.innerHTML =
+      "You don't have enough materials to craft anything";
+  }
   craftableItems.forEach((craftable) => {
     const craftPossibility = createDivElement("craft-possibility");
     const resultElement = createItemElement(craftable.result);
@@ -213,7 +223,6 @@ function collapseInventory(inventory) {
 }
 
 function inventoryHasAllSourceItems(collapsedInventory, sourceItems) {
-  console.log(sourceItems.map((item) => collapsedInventory[item.name]));
   return (
     sourceItems.length ===
     sourceItems

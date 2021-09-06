@@ -30,6 +30,11 @@ function showOptions(option) {
         createLi("CHOP WOOD", sendCommand, "CHOP WOOD", lockedBlock)
       );
       break;
+    case "DESERT":
+      menuOptions.appendChild(
+        createLi("GATHER SAND", sendCommand, "GATHER SAND", lockedBlock)
+      );
+      break;
   }
   return true;
 }
