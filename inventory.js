@@ -86,7 +86,6 @@ window.addEventListener("load", (e) => {
   inventoryElement = document.querySelector(".inventory");
   craftingElement = document.querySelector(".crafting");
   buildingElement = document.querySelector(".building");
-
   panelList = {
     inventory: {
       element: inventoryElement,
@@ -113,6 +112,7 @@ window.addEventListener("load", (e) => {
     (inventoryItemElement) => {
       inventoryItemElement.addEventListener("drop", drop);
       inventoryItemElement.addEventListener("dragover", dragover);
+      inventoryItemElement.addEventListener("touchend", doubletaphandler);
       inventoryItemElement.firstChild.addEventListener("dragstart", drag);
       inventoryItemElement.firstChild.draggable = true;
     }
@@ -121,6 +121,7 @@ window.addEventListener("load", (e) => {
     (equipmentItemElement) => {
       equipmentItemElement.addEventListener("drop", drop);
       equipmentItemElement.addEventListener("dragover", dragover);
+      equipmentItemElement.addEventListener("touchend", doubletaphandler);
       equipmentItemElement.firstChild.addEventListener("dragstart", drag);
       equipmentItemElement.firstChild.draggable = true;
     }
@@ -293,4 +294,22 @@ function unequipItem(item) {
     player: thisPlayer,
     itemToUnequip: item,
   });
+}
+let lastTapAtTime = 0;
+
+function doubletaphandler(ev) {
+  if (Date.now() - lastTapAtTime < 1000) {
+    const source =
+      ev.target.parentElement.id || ev.target.parentElement.classList[0];
+    const action = Number.isNaN(Number.parseInt(source)) ? "unequip" : "equip";
+    if (action === "equip") {
+      if (thisPlayer.inventory.items[source]?.name)
+        equipItem(thisPlayer.inventory.items[source]);
+    }
+    if (action === "unequip") {
+      if (thisPlayer.inventory.equiped[source].name)
+        unequipItem(thisPlayer.inventory.equiped[source]);
+    }
+  }
+  lastTapAtTime = Date.now();
 }
