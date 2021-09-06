@@ -108,6 +108,23 @@ window.addEventListener("load", (e) => {
       togglePanel(key);
     });
   });
+
+  Array.from(inventoryElement.children[1].children).forEach(
+    (inventoryItemElement) => {
+      inventoryItemElement.addEventListener("drop", drop);
+      inventoryItemElement.addEventListener("dragover", dragover);
+      inventoryItemElement.firstChild.addEventListener("dragstart", drag);
+      inventoryItemElement.firstChild.draggable = true;
+    }
+  );
+  Array.from(inventoryElement.children[0].children).forEach(
+    (equipmentItemElement) => {
+      equipmentItemElement.addEventListener("drop", drop);
+      equipmentItemElement.addEventListener("dragover", dragover);
+      equipmentItemElement.firstChild.addEventListener("dragstart", drag);
+      equipmentItemElement.firstChild.draggable = true;
+    }
+  );
 });
 
 function togglePanel(panel) {
@@ -206,4 +223,80 @@ function inventoryHasAllSourceItems(collapsedInventory, sourceItems) {
       )
       .filter(Boolean).length
   );
+}
+
+function dragover(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData(
+    "text",
+    ev.target.parentElement.id || ev.target.parentElement.classList[0]
+  );
+}
+
+function parseMoveAction(sourceSpot, targetSpot) {
+  let parsedSource = Number.parseInt(sourceSpot);
+  let parsedTarget = Number.parseInt(targetSpot);
+  if (Number.isNaN(parsedSource)) {
+    parsedSource = sourceSpot;
+  }
+  if (Number.isNaN(parsedTarget)) {
+    parsedTarget = targetSpot;
+  }
+
+  if (typeof parsedSource === "number" && typeof parsedTarget === "number") {
+    return ["move", parsedSource, parsedTarget];
+  }
+  if (typeof parsedSource === "string" && typeof parsedTarget === "number") {
+    return ["unequip", parsedSource, parsedTarget];
+  }
+  if (typeof parsedSource === "number" && typeof parsedTarget === "string") {
+    return ["equip", parsedSource, parsedTarget];
+  }
+}
+
+function drop(ev) {
+  ev.preventDefault();
+
+  const [action, sourceSpot, targetSpot] = parseMoveAction(
+    ev.dataTransfer.getData("text"),
+    ev.target.parentElement.id
+  );
+  console.log(action, sourceSpot, targetSpot);
+  console.log(action, typeof sourceSpot, typeof targetSpot);
+  if (action === "equip") {
+    console.log(
+      "equping " +
+        thisPlayer.inventory.items[sourceSpot].name +
+        " to " +
+        targetSpot[0]
+    );
+    equipItem(thisPlayer.inventory.items[sourceSpot]);
+  }
+  if (action === "unequip") {
+    unequipItem(thisPlayer.inventory.equiped[sourceSpot]);
+  }
+
+  if (action === "move") {
+    socket.emit("items:move", {
+      player: thisPlayer,
+      sourceIndex: sourceSpot,
+      targetIndex: targetSpot,
+    });
+  }
+}
+
+function equipItem(item) {
+  socket.emit("items:equip", {
+    player: thisPlayer,
+    itemToEquip: item,
+  });
+}
+function unequipItem(item) {
+  socket.emit("items:unequip", {
+    player: thisPlayer,
+    itemToUnequip: item,
+  });
 }
