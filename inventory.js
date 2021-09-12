@@ -4,39 +4,11 @@ panelList = {};
 ITEMS = [];
 
 function sendCommand(command, block) {
-  switch (command) {
-    case "CHOP WOOD":
-      socket.emit("items:add", {
-        player: thisPlayer,
-        item: ITEMS.find((i) => i.name === "wood"),
-      });
-      break;
-    case "FISH":
-    case "HUNT":
-      socket.emit("items:add", {
-        player: thisPlayer,
-        item: ITEMS.find((i) => i.name === "meat"),
-      });
-      break;
-    case "MINE":
-      ore = ITEMS.find(
-        (i) =>
-          i.name ===
-          MATERIAL_RICHNESS[block.materialRichness].toLowerCase() + "_ore"
-      );
-      if (ore)
-        socket.emit("items:add", {
-          player: thisPlayer,
-          item: ore,
-        });
-      break;
-    case "GATHER SAND":
-      socket.emit("items:add", {
-        player: thisPlayer,
-        item: ITEMS.find((i) => i.name === "sand"),
-      });
-      break;
-  }
+  socket.emit("items:action", {
+    player: thisPlayer,
+    action: command,
+    block: block,
+  });
 }
 
 function craftItem(itemName) {

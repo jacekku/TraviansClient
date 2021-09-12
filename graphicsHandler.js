@@ -18,7 +18,7 @@ function drawBlock(block) {
   rect(block.x * blockSize, block.y * blockSize, blockSize, blockSize);
   fill(255);
   // text(`${block.x},${block.y}`,block.x * blockSize+2,block.y * blockSize+textSize())
-  moistureImg = mapImageToString(block.moisture, MOISTURE);
+  moistureImg = mapImageToString(block.moisture);
   if (moistureImg) {
     image(
       moistureImg,
@@ -28,10 +28,7 @@ function drawBlock(block) {
       blockSize
     );
   }
-  materialRichnessImg = mapImageToString(
-    block.materialRichness,
-    MATERIAL_RICHNESS
-  );
+  materialRichnessImg = mapImageToString(block.materials);
   if (materialRichnessImg) {
     image(
       materialRichnessImg,
@@ -41,7 +38,7 @@ function drawBlock(block) {
       blockSize
     );
   }
-  animalsImg = mapImageToString(block.animals, ANIMALS);
+  animalsImg = mapImageToString(block.animals);
   if (animalsImg) {
     image(
       animalsImg,
@@ -54,11 +51,16 @@ function drawBlock(block) {
 }
 
 function mapImageToString(type, sourceEnum) {
-  string = sourceEnum[type];
+  string = type;
   switch (string) {
     case "COPPER":
       return IMAGES.copper;
-
+    case "TIN":
+      return IMAGES.tin;
+    case "OIL":
+      return IMAGES.oil;
+    case "SALT":
+      return IMAGES.salt;
     case "DEER":
       return IMAGES.deer;
 
@@ -97,6 +99,9 @@ function preload() {
   const iron = loadImage("assets/iron.png");
   const knight = loadImage("assets/knight.png");
   const knightSleeping = loadImage("assets/knightSleeping.png");
+  const oil = loadImage("assets/oil.png");
+  const salt = loadImage("assets/salt.png");
+  const tin = loadImage("assets/tin.png");
   IMAGES = {
     copper,
     deer,
@@ -108,6 +113,9 @@ function preload() {
     iron,
     knight,
     knightSleeping,
+    oil,
+    salt,
+    tin,
   };
 }
 
@@ -119,6 +127,7 @@ function setup() {
   c.parent("game");
   textSize(10);
   noStroke();
+  noSmooth();
 }
 
 function draw() {
@@ -219,10 +228,12 @@ function drawPointer(pointer) {
 }
 
 function getBlockColor(block) {
-  if (BIOMES[block.type] == "MOUNTAIN") return "gray";
-  if (BIOMES[block.type] == "PLAIN") return "darkgreen";
-  if (BIOMES[block.type] == "BEACH") return "yellow";
-  if (BIOMES[block.type] == "WATER") return "darkblue";
+  if (block.type == "MOUNTAIN") return "gray";
+  if (block.type == "PLAIN") return "#228c08";
+  if (block.type == "BEACH") return "yellow";
+  if (block.type == "DEEP_WATER") return "darkblue";
+  if (block.type == "SHALLOW_WATER") return "blue";
+  if (block.type == "HILLS") return "#1b6e07";
   return block.type;
 }
 

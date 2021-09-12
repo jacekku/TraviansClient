@@ -7,35 +7,13 @@ lockedBlock = {};
 function showOptions(option) {
   menuOptions.innerHTML = "";
   menuOptions.appendChild(createHeader(option));
-  switch (option) {
-    case "DEER":
-      menuOptions.appendChild(
-        createLi("HUNT", sendCommand, "HUNT", lockedBlock)
-      );
-      break;
-    case "IRON":
-    case "COPPER":
-    case "GOLD":
-      menuOptions.appendChild(
-        createLi("MINE", sendCommand, "MINE", lockedBlock)
-      );
-      break;
-    case "FISH":
-      menuOptions.appendChild(
-        createLi("FISH", sendCommand, "FISH", lockedBlock)
-      );
-      break;
-    case "FOREST":
-      menuOptions.appendChild(
-        createLi("CHOP WOOD", sendCommand, "CHOP WOOD", lockedBlock)
-      );
-      break;
-    case "DESERT":
-      menuOptions.appendChild(
-        createLi("GATHER SAND", sendCommand, "GATHER SAND", lockedBlock)
-      );
-      break;
-  }
+
+  const actions = ACTION_MAPPER[option] || [];
+
+  actions.forEach((action) => {
+    menuOptions.appendChild(createLi(action, sendCommand, action, lockedBlock));
+  });
+
   return true;
 }
 
@@ -80,26 +58,16 @@ function showBlockOptions(block) {
 function showBlockInfo(block) {
   menuOptions.innerHTML = "";
   menuOptions.appendChild(createHeader("Block Info"));
+  const { animals, moisture, materials, type } = block;
+  if (animals != "NONE")
+    menuOptions.appendChild(createLi(animals, showOptions, animals));
 
-  const animal = ANIMALS[block.animals];
-  const moisture = MOISTURE[block.moisture];
-  const materialRichness = MATERIAL_RICHNESS[block.materialRichness];
-  const blockType = BIOMES[block.type];
+  if (moisture != "NONE")
+    menuOptions.appendChild(createLi(moisture, showOptions, moisture));
 
-  animal != "NONE"
-    ? menuOptions.appendChild(createLi(animal, showOptions, animal))
-    : null;
-  moisture != "NONE"
-    ? menuOptions.appendChild(createLi(moisture, showOptions, moisture))
-    : null;
-  materialRichness != "NONE"
-    ? menuOptions.appendChild(
-        createLi(materialRichness, showOptions, materialRichness)
-      )
-    : null;
-  blockType
-    ? menuOptions.appendChild(createLi(blockType, showOptions, blockType))
-    : null;
+  if (materials != "NONE")
+    menuOptions.appendChild(createLi(materials, showOptions, materials));
+  if (type) menuOptions.appendChild(createLi(type, showOptions, type));
   return true;
 }
 
