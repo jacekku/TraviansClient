@@ -228,13 +228,13 @@ function drawPointer(pointer) {
 }
 
 function getBlockColor(block) {
-  if (block.type == "MOUNTAIN") return "gray";
-  if (block.type == "PLAIN") return "#228c08";
-  if (block.type == "BEACH") return "yellow";
-  if (block.type == "DEEP_WATER") return "darkblue";
-  if (block.type == "SHALLOW_WATER") return "blue";
-  if (block.type == "HILLS") return "#1b6e07";
-  return block.type;
+  if (block.biome == "MOUNTAIN") return "gray";
+  if (block.biome == "PLAIN") return "#228c08";
+  if (block.biome == "BEACH") return "yellow";
+  if (block.biome == "DEEP_WATER") return "darkblue";
+  if (block.biome == "SHALLOW_WATER") return "blue";
+  if (block.biome == "HILLS") return "#1b6e07";
+  return "black";
 }
 
 function clampNumber(num, min, max) {
