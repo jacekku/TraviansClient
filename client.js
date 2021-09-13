@@ -6,7 +6,7 @@ let X = 1,
 let playerName;
 terrain = {};
 players = "";
-
+buildings = [];
 const URL = window.location.href.includes("localhost")
   ? "http://localhost:3000"
   : "https://warlordsonline.net:3000";
@@ -37,8 +37,21 @@ function connect() {
   socket.on("players:update", () => {
     socket.emit("players:requestUpdate", { player: { name: playerName } });
   });
-  socket.on("players:requestUpdate", (data) => updatePlayers(data));
-  socket.on("items:update", updateInventory);
+  socket.on("buildings:update", () => {
+    socket.emit("buildings:requestUpdate", { player: { name: playerName } });
+  });
+  socket.on("players:requestUpdate", (data) => {
+    updatePlayers(data);
+    __updateShow();
+  });
+  socket.on("buildings:requestUpdate", (data) => {
+    updateBuildings(data);
+    __updateShow();
+  });
+  socket.on("items:update", (data) => {
+    updateInventory(data);
+    __updateShow();
+  });
   socket.on("exception", (data) => alert(JSON.stringify(data.message)));
 }
 
@@ -51,10 +64,18 @@ function onConnected() {
   socket.emit("players:requestUpdate", { player: { name: playerName } });
   fetch(URL + "/state/definitions")
     .then((data) => data.json())
-    .then((data) => (ITEMS = data.itemDefinitions))
+    .then((data) => {
+      ITEMS = data.itemDefinitions;
+      return data;
+    })
+    .then((data) => {
+      BUILDINGS = data.buildingDefinitions;
+      return data;
+    })
     .then((_) => socket.emit("items:update", { player: { name: playerName } }));
   socket.emit("terrain:info");
   socket.emit("terrain:chunk", { player: { name: playerName }, chunks: [] });
+  socket.emit("buildings:requestUpdate", { player: { name: playerName } });
 }
 
 function handleConnected() {
@@ -129,6 +150,9 @@ function sendMovePlayer(name, x, y) {
       player: { name: playerName },
       chunks: terrain.chunks.map((chunk) => chunk.id),
     });
+    socket.emit("buildings:requestUpdate", {
+      player: { name: playerName },
+    });
   }
 }
 
@@ -140,4 +164,7 @@ function updatePlayers(newPlayers) {
   thisPlayer = players.find((player_) => playerName === player_.name);
   X = thisPlayer.x;
   Y = thisPlayer.y;
+}
+function updateBuildings(newBuildings) {
+  buildings = newBuildings;
 }

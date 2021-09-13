@@ -2,12 +2,21 @@ showPanel = false;
 currentPanel = "inventory";
 panelList = {};
 ITEMS = [];
-
+BUILDINGS = [];
 function sendCommand(command, block) {
   socket.emit("items:action", {
     player: thisPlayer,
     action: command,
     block: block,
+  });
+}
+
+function sendCommandBuilding(command, building) {
+  console.log(command, building);
+  socket.emit("buildings:action", {
+    player: thisPlayer,
+    action: command,
+    building: building,
   });
 }
 
@@ -24,11 +33,20 @@ function getItemPath(itemName) {
   return "assets/items/" + itemName + ".png" || "assets/knight.png";
 }
 
+function getBuildingPath(buildingName) {
+  return "assets/buildings/" + buildingName + ".png" || "assets/knight.png";
+}
+
 function updateInventory(inventory) {
   thisPlayer.inventory = inventory;
 
+  __updateShow();
+}
+
+function __updateShow() {
   if (currentPanel === "inventory") showInventory();
   if (currentPanel === "crafting") showPossibleCrafting();
+  if (currentPanel === "building") showBuildings();
 }
 
 function showInventory() {
@@ -78,6 +96,7 @@ window.addEventListener("load", (e) => {
     building: {
       button: buildingButton,
       element: buildingElement,
+      callback: showBuildings,
     },
   };
   Object.keys(panelList).forEach((key) => {
@@ -122,28 +141,25 @@ function togglePanel(panel) {
   if (panelList[currentPanel].callback) panelList[currentPanel].callback();
 }
 
-function showPossibleCrafting() {
-  if (currentPanel !== "crafting") return;
-  const collapsedInventory = collapseInventory(thisPlayer.inventory);
-  const craftableItems = ITEMS.filter((item) => item.craftable)
-    .map((item) => item.craftable)
-    .filter((craftable) =>
-      inventoryHasAllSourceItems(collapsedInventory, craftable.sourceItems)
-    );
-  const craftingPossibilitiesElement = document.querySelector(
-    ".crafting-possibilities"
+function nearbyBuildingHasCraftingFacility(craftable) {
+  const building = buildings.find(
+    (b) => b.x === thisPlayer.x && b.y === thisPlayer.y
   );
-  craftingPossibilitiesElement.innerHTML = "";
-  if (craftableItems.length === 0) {
-    craftingPossibilitiesElement.innerHTML =
-      "You don't have enough materials to craft anything";
-  }
-  craftableItems.forEach((craftable) => {
-    const craftPossibility = createDivElement("craft-possibility");
+  if (!building) return false;
+  if (!building.craftingFacilities) return false;
+  const { facility } = craftable;
+  let canCraft = false;
+  building.craftingFacilities.forEach((f) => {
+    if (!canCraft && facility.includes(f.name)) {
+      canCraft = true;
+    }
+  });
+  return canCraft;
+}
+
+function showPossibleCrafting() {
+  function _prepare(craftingPossibilitiesElement, craftPossibility, craftable) {
     const resultElement = createItemElement(craftable.result);
-    resultElement.addEventListener("click", () => {
-      craftItem(craftable.result);
-    });
     craftPossibility.appendChild(resultElement);
     craftPossibility.appendChild(createArrowElement());
     craftable.sourceItems.forEach((item) =>
@@ -151,6 +167,41 @@ function showPossibleCrafting() {
     );
 
     craftingPossibilitiesElement.appendChild(craftPossibility);
+    return resultElement;
+  }
+  if (currentPanel !== "crafting") return;
+  const collapsedInventory = collapseInventory(thisPlayer.inventory);
+  const craftableItems = ITEMS.filter((item) => item.craftable)
+    .map((item) => item.craftable)
+    .filter((craftable) =>
+      inventoryHasAllSourceItems(collapsedInventory, craftable.sourceItems)
+    )
+    .filter(
+      (craftable) =>
+        craftable.facility.includes("inventory-craft") ||
+        nearbyBuildingHasCraftingFacility(craftable)
+    );
+  const notCraftable = ITEMS.filter((item) => item.craftable)
+    .map((item) => item.craftable)
+    .filter((item) => !craftableItems.includes(item));
+  const craftingPossibilitiesElement = document.querySelector(
+    ".crafting-possibilities"
+  );
+  craftingPossibilitiesElement.innerHTML = "";
+  craftableItems.forEach((craftable) => {
+    const craftPossibility = createDivElement("craft-possibility");
+    const resultElement = _prepare(
+      craftingPossibilitiesElement,
+      craftPossibility,
+      craftable
+    );
+    resultElement.addEventListener("click", () => {
+      craftItem(craftable.result);
+    });
+  });
+  notCraftable.forEach((craftable) => {
+    const craftPossibility = createDivElement("craft-possibility", "inactive");
+    _prepare(craftingPossibilitiesElement, craftPossibility, craftable);
   });
 }
 
@@ -167,10 +218,17 @@ function createSourceItemElement(item) {
   return el;
 }
 
-function createItemElement(itemName) {
-  const el = createDivElement("item");
+function createItemElement(itemName, ...classes) {
+  const el = createDivElement("item", ...classes);
   const img = document.createElement("img");
   img.src = getItemPath(itemName);
+  el.appendChild(img);
+  return el;
+}
+function createBuildingElement(buildingName, ...classes) {
+  const el = createDivElement("item", ...classes);
+  const img = document.createElement("img");
+  img.src = getBuildingPath(buildingName);
   el.appendChild(img);
   return el;
 }
@@ -293,4 +351,52 @@ function doubletaphandler(ev) {
     }
   }
   lastTapAtTime = Date.now();
+}
+
+function createBuilding(block, building) {
+  socket.emit("buildings:create", {
+    player: thisPlayer,
+    building,
+    block,
+  });
+}
+
+function showBuildings() {
+  function _prepare(buildingPossibilitiesElement, buildPossibility, building) {
+    const resultElement = createBuildingElement(building.name);
+    buildPossibility.appendChild(resultElement);
+    buildPossibility.appendChild(createArrowElement());
+    building.buildable.sourceItems.forEach((item) =>
+      buildPossibility.appendChild(createSourceItemElement(item))
+    );
+    buildingPossibilitiesElement.appendChild(buildPossibility);
+    return resultElement;
+  }
+  if (currentPanel !== "building") return;
+  const collapsedInventory = collapseInventory(thisPlayer.inventory);
+  const buildable = BUILDINGS.filter((item) =>
+    inventoryHasAllSourceItems(collapsedInventory, item.buildable.sourceItems)
+  );
+  const notBuildable = BUILDINGS.filter((item) => !buildable.includes(item));
+  const buildingPossibilitiesElement = document.querySelector(
+    ".building-possibilities"
+  );
+
+  buildingPossibilitiesElement.innerHTML = "";
+  buildable.forEach((building) => {
+    const buildPossibility = createDivElement("craft-possibility");
+    const resultElement = _prepare(
+      buildingPossibilitiesElement,
+      buildPossibility,
+      building
+    );
+    resultElement.addEventListener("click", () => {
+      const playerBlock = findBlockByXY(thisPlayer.x, thisPlayer.y);
+      createBuilding(playerBlock, building);
+    });
+  });
+  notBuildable.forEach((building) => {
+    const buildPossibility = createDivElement("craft-possibility", "inactive");
+    _prepare(buildingPossibilitiesElement, buildPossibility, building);
+  });
 }
