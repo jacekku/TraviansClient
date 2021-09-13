@@ -53,12 +53,30 @@ function showBlockOptions(block) {
     menuOptions.appendChild(createLi("Move here", movePlayer, block));
   }
   menuOptions.appendChild(createLi("Actions", showBlockInfo, block));
+  const building = buildings.find((b) => b.x === block.x && b.y === block.y);
+  if (building)
+    menuOptions.appendChild(
+      createLi("Buildings", showBuildingOptions, building)
+    );
+}
+
+function showBuildingOptions(building) {
+  menuOptions.innerHTML = "";
+  menuOptions.appendChild(createHeader(building.name.toUpperCase()));
+
+  const actions = ACTION_MAPPER["BUILDING"] || [];
+  actions.forEach((action) => {
+    menuOptions.appendChild(
+      createLi(action, sendCommandBuilding, action, building)
+    );
+  });
+  return true;
 }
 
 function showBlockInfo(block) {
   menuOptions.innerHTML = "";
   menuOptions.appendChild(createHeader("Block Info"));
-  const { animals, moisture, materials, type } = block;
+  const { animals, moisture, materials, biome } = block;
   if (animals != "NONE")
     menuOptions.appendChild(createLi(animals, showOptions, animals));
 
@@ -67,7 +85,7 @@ function showBlockInfo(block) {
 
   if (materials != "NONE")
     menuOptions.appendChild(createLi(materials, showOptions, materials));
-  if (type) menuOptions.appendChild(createLi(type, showOptions, type));
+  if (biome) menuOptions.appendChild(createLi(biome, showOptions, biome));
   return true;
 }
 
@@ -85,6 +103,13 @@ const setPosition = ({ top, left }) => {
 function findBlock(pointer) {
   const blockX = Math.round(pointer.x / blockSize);
   const blockY = Math.round(pointer.y / blockSize);
+  const chunkX = Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize;
+  const chunkY = Math.floor(blockY / terrain.chunkSize) * terrain.chunkSize;
+  const chunk = terrain.chunks.find((ch) => ch.x === chunkX && ch.y === chunkY);
+  return chunk.blocks.find((block) => block.x === blockX && block.y === blockY);
+}
+
+function findBlockByXY(blockX, blockY) {
   const chunkX = Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize;
   const chunkY = Math.floor(blockY / terrain.chunkSize) * terrain.chunkSize;
   const chunk = terrain.chunks.find((ch) => ch.x === chunkX && ch.y === chunkY);

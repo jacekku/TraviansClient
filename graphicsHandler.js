@@ -11,6 +11,24 @@ function drawChunk(chunk) {
   rect(chunkX, chunkY, chunkSize * blockSize, chunkSize * blockSize);
 }
 
+function drawBuildings(buildings) {
+  buildings.forEach((building) => drawBuilding(building));
+}
+
+function drawBuilding(building) {
+  let img = mapImageToString(building.name, "BUILDING");
+  if (!img) {
+    return;
+  }
+  image(
+    img,
+    building.x * blockSize,
+    building.y * blockSize,
+    blockSize,
+    blockSize
+  );
+}
+
 function drawBlock(block) {
   // strokeWeight(0.5)
   // stroke("#222")
@@ -50,73 +68,37 @@ function drawBlock(block) {
   }
 }
 
-function mapImageToString(type, sourceEnum) {
-  string = type;
-  switch (string) {
-    case "COPPER":
-      return IMAGES.copper;
-    case "TIN":
-      return IMAGES.tin;
-    case "OIL":
-      return IMAGES.oil;
-    case "SALT":
-      return IMAGES.salt;
-    case "DEER":
-      return IMAGES.deer;
-
-    case "DESERT":
-      return IMAGES.desert;
-
-    case "FIELD":
-      return IMAGES.field;
-
-    case "FISH":
-      return IMAGES.fish;
-
-    case "FOREST":
-      return IMAGES.forest;
-
-    case "GOLD":
-      return IMAGES.gold;
-
-    case "IRON":
-      return IMAGES.iron;
-
+function mapImageToString(name, TYPE) {
+  const string = name.toLowerCase();
+  if (string == "none") return;
+  let path;
+  switch (TYPE) {
+    case "BUILDING":
+      path = "buildings/";
+      break;
+    case "ITEM":
+      path = "items/";
     default:
+      path = "map/";
       break;
   }
+  const imageName = path + string;
+  if (IMAGES[imageName]) {
+    return IMAGES[imageName];
+  }
+  loadImage(
+    "assets/" + path + string + ".png",
+    (img) => (IMAGES[imageName] = img),
+    (err) => (IMAGES[imageName] = IMAGES.error)
+  );
+  IMAGES[imageName] = IMAGES.error;
+  return IMAGES.error;
 }
-let IMAGES = {};
+
+IMAGES = {};
 
 function preload() {
-  const copper = loadImage("assets/copper.png");
-  const deer = loadImage("assets/deer.png");
-  const desert = loadImage("assets/desert.png");
-  const field = loadImage("assets/field.png");
-  const fish = loadImage("assets/fish.png");
-  const forest = loadImage("assets/forest.png");
-  const gold = loadImage("assets/gold.png");
-  const iron = loadImage("assets/iron.png");
-  const knight = loadImage("assets/knight.png");
-  const knightSleeping = loadImage("assets/knightSleeping.png");
-  const oil = loadImage("assets/oil.png");
-  const salt = loadImage("assets/salt.png");
-  const tin = loadImage("assets/tin.png");
-  IMAGES = {
-    copper,
-    deer,
-    desert,
-    field,
-    fish,
-    forest,
-    gold,
-    iron,
-    knight,
-    knightSleeping,
-    oil,
-    salt,
-    tin,
-  };
+  loadImage("assets/error.png", (img) => (IMAGES.error = img));
 }
 
 function setup() {
@@ -148,7 +130,7 @@ function draw() {
         drawBlock(block);
       }
     }
-
+    drawBuildings(buildings);
     drawPlayers();
     drawFrustum(frustum);
     drawPointer(pointer);
@@ -197,17 +179,10 @@ function drawPlayers() {
   textSize(10);
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
-    if (player.active) {
+    const img = mapImageToString("knight");
+    if (player && img) {
       image(
-        IMAGES.knight,
-        player.x * blockSize,
-        player.y * blockSize,
-        blockSize,
-        blockSize
-      );
-    } else {
-      image(
-        IMAGES.knightSleeping,
+        img,
         player.x * blockSize,
         player.y * blockSize,
         blockSize,
