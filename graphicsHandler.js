@@ -1,4 +1,4 @@
-let blockSize = 3;
+let blockSize = 4;
 const frustumSize = 13;
 
 function drawChunk(chunk) {
@@ -36,16 +36,17 @@ function drawBlock(block) {
   rect(block.x * blockSize, block.y * blockSize, blockSize, blockSize);
   fill(255);
   // text(`${block.x},${block.y}`,block.x * blockSize+2,block.y * blockSize+textSize())
-  moistureImg = mapImageToString(block.moisture);
-  if (moistureImg) {
+  biomeImg = mapImageToString(block.biome);
+  if (biomeImg) {
     image(
-      moistureImg,
+      biomeImg,
       block.x * blockSize,
       block.y * blockSize,
       blockSize,
       blockSize
     );
   }
+
   materialRichnessImg = mapImageToString(block.materials);
   if (materialRichnessImg) {
     image(
@@ -60,6 +61,16 @@ function drawBlock(block) {
   if (animalsImg) {
     image(
       animalsImg,
+      block.x * blockSize,
+      block.y * blockSize,
+      blockSize,
+      blockSize
+    );
+  }
+  moistureImg = mapImageToString(block.moisture);
+  if (moistureImg) {
+    image(
+      moistureImg,
       block.x * blockSize,
       block.y * blockSize,
       blockSize,
@@ -102,7 +113,7 @@ function preload() {
 }
 
 function setup() {
-  const size = Math.min(500, window.innerWidth);
+  const size = Math.min(600, window.innerWidth);
   let c = createCanvas(size, size);
 
   blockSize = width / frustumSize;
@@ -132,6 +143,15 @@ function draw() {
     }
     drawBuildings(buildings);
     drawPlayers();
+    if (currentPanel == "crafting" && showPanel) {
+      fill("#0f04");
+      rect(
+        thisPlayer.x * blockSize - blockSize,
+        thisPlayer.y * blockSize - blockSize,
+        3 * blockSize,
+        3 * blockSize
+      );
+    }
     drawFrustum(frustum);
     drawPointer(pointer);
   }
@@ -204,7 +224,7 @@ function drawPointer(pointer) {
 
 function getBlockColor(block) {
   if (block.biome == "MOUNTAIN") return "gray";
-  if (block.biome == "PLAIN") return "#228c08";
+  if (block.biome == "PLAIN") return "#44ae2a";
   if (block.biome == "BEACH") return "yellow";
   if (block.biome == "DEEP_WATER") return "darkblue";
   if (block.biome == "SHALLOW_WATER") return "blue";

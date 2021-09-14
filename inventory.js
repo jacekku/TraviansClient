@@ -12,11 +12,11 @@ function sendCommand(command, block) {
 }
 
 function sendCommandBuilding(command, building) {
-  console.log(command, building);
   socket.emit("buildings:action", {
     player: thisPlayer,
     action: command,
     building: building,
+    block: lockedBlock,
   });
 }
 
@@ -55,7 +55,7 @@ function showInventory() {
   thisPlayer.inventory.items.forEach((item, index) => {
     if (item) {
       itemsElement[index].children[0].src = getItemPath(
-        ITEMS.find((i) => i.name === item.name).name
+        ITEMS.find((i) => i.name === item.name)?.name
       );
       itemsElement[index].children[1].innerHTML = item.stackSize;
     } else {
@@ -141,18 +141,40 @@ function togglePanel(panel) {
   if (panelList[currentPanel].callback) panelList[currentPanel].callback();
 }
 
+const nMap = [
+  [-1, -1],
+  [0, -1],
+  [1, -1],
+  [-1, 0],
+  [0, 0],
+  [1, 0],
+  [-1, 1],
+  [0, 1],
+  [1, 1],
+];
+
 function nearbyBuildingHasCraftingFacility(craftable) {
-  const building = buildings.find(
-    (b) => b.x === thisPlayer.x && b.y === thisPlayer.y
-  );
-  if (!building) return false;
-  if (!building.craftingFacilities) return false;
+  const nearbyBuildings = buildings.filter((b) => {
+    return (
+      nMap
+        .map((coords) => {
+          return (
+            thisPlayer.x + coords[0] == b.x && thisPlayer.y + coords[1] == b.y
+          );
+        })
+        .filter(Boolean).length > 0
+    );
+  });
+  if (!nearbyBuildings) return false;
   const { facility } = craftable;
   let canCraft = false;
-  building.craftingFacilities.forEach((f) => {
-    if (!canCraft && facility.includes(f.name)) {
-      canCraft = true;
-    }
+  const craftingFacilities = nearbyBuildings.map((nb) => nb.craftingFacilities);
+  craftingFacilities.forEach((facilities) => {
+    facilities.forEach((f) => {
+      if (!canCraft && facility.includes(f.name)) {
+        canCraft = true;
+      }
+    });
   });
   return canCraft;
 }
@@ -165,7 +187,25 @@ function showPossibleCrafting() {
     craftable.sourceItems.forEach((item) =>
       craftPossibility.appendChild(createSourceItemElement(item))
     );
-
+    if (craftable.facility?.length >= 1) {
+      craftPossibility.appendChild(createArrowElement());
+      craftable.facility.forEach((f) => {
+        const bWithCrafting = BUILDINGS.filter(
+          (b) => !!b.craftingFacilities
+        ).map((b) => {
+          return {
+            name: b.name,
+            facilities: b.craftingFacilities.map((cf) => cf.name),
+          };
+        });
+        bWithCrafting.forEach((bwc) => {
+          if (bwc.facilities.includes(f)) {
+            craftPossibility.appendChild(createBuildingElement(bwc.name));
+            return;
+          }
+        });
+      });
+    }
     craftingPossibilitiesElement.appendChild(craftPossibility);
     return resultElement;
   }
@@ -370,13 +410,20 @@ function showBuildings() {
       buildPossibility.appendChild(createSourceItemElement(item))
     );
     buildingPossibilitiesElement.appendChild(buildPossibility);
+    if (building.level > 1) {
+      const upgradeFrom = BUILDINGS.find(
+        (b) => building.name === b?.upgrade?.name
+      );
+      buildPossibility.appendChild(createArrowElement());
+      buildPossibility.appendChild(createBuildingElement(upgradeFrom.name));
+    }
     return resultElement;
   }
   if (currentPanel !== "building") return;
   const collapsedInventory = collapseInventory(thisPlayer.inventory);
   const buildable = BUILDINGS.filter((item) =>
     inventoryHasAllSourceItems(collapsedInventory, item.buildable.sourceItems)
-  );
+  ).filter((b) => b.level == 1);
   const notBuildable = BUILDINGS.filter((item) => !buildable.includes(item));
   const buildingPossibilitiesElement = document.querySelector(
     ".building-possibilities"
