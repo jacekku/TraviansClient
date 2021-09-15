@@ -52,7 +52,9 @@ function __updateShow() {
 function showInventory() {
   const itemsElement = inventoryElement.children[1].children;
 
-  thisPlayer.inventory.items.forEach((item, index) => {
+  const inventory = thisPlayer.inventory;
+  if (!inventory) return;
+  inventory.items.forEach((item, index) => {
     if (item) {
       itemsElement[index].children[0].src = getItemPath(
         ITEMS.find((i) => i.name === item.name)?.name
@@ -63,7 +65,7 @@ function showInventory() {
       itemsElement[index].children[1].innerHTML = "";
     }
   });
-  Object.keys(thisPlayer.inventory.equiped).forEach((type) => {
+  Object.keys(inventory.equiped).forEach((type) => {
     const element = document.querySelector(`.${type}`);
     if (thisPlayer.inventory.equiped[type].name) {
       element.firstChild.src = getItemPath(
