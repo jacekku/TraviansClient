@@ -1,5 +1,5 @@
 showPanel = false;
-currentPanel = "inventory";
+currentPanel = "";
 panelList = {};
 ITEMS = [];
 BUILDINGS = [];

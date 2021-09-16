@@ -1,0 +1,13 @@
+.controls {
+  position: absolute;
+  display: grid;
+  grid-template-areas:
+    "actions"
+    "movement";
+  width: 50vw;
+  height: 50vw;
+}
+
+.controls div .item {
+  border: none;
+}
