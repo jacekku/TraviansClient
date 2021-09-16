@@ -7,9 +7,10 @@ let playerName;
 terrain = {};
 players = "";
 buildings = [];
-const URL = window.location.href.includes("localhost")
-  ? "http://localhost:3000"
-  : "https://warlordsonline.net:3000";
+console.log(window.location.hostname);
+const URL = window.location.href.includes("warlordsonline.net")
+  ? "https://warlordsonline.net:3000"
+  : "http://" + window.location.hostname + ":3000";
 function connect() {
   name = document.getElementById("name");
   playerName = name.value;
@@ -100,60 +101,6 @@ function handleDisconnected() {
 
 function keyPressed() {
   movePlayer();
-}
-
-const mvmspeed = 1;
-
-function movePlayer(block) {
-  if (!terrain) return;
-  localX = X;
-  localY = Y;
-  if (!block) {
-    if (keyCode === LEFT_ARROW) {
-      localX -= mvmspeed;
-    }
-    if (keyCode === RIGHT_ARROW) {
-      localX += mvmspeed;
-    }
-    if (keyCode === UP_ARROW) {
-      localY -= mvmspeed;
-    }
-    if (keyCode === DOWN_ARROW) {
-      localY += mvmspeed;
-    }
-  } else {
-    if (block.x === localX - 1) {
-      localX -= mvmspeed;
-    }
-    if (block.x === localX + 1) {
-      localX += mvmspeed;
-    }
-    if (block.y === localY - 1) {
-      localY -= mvmspeed;
-    }
-    if (block.y === localY + 1) {
-      localY += mvmspeed;
-    }
-  }
-  localX = clampNumber(localX, 0, terrain.width - 1);
-  localY = clampNumber(localY, 0, terrain.height - 1);
-  sendMovePlayer(playerName, localX, localY);
-}
-
-function sendMovePlayer(name, x, y) {
-  if (socket) {
-    socket.emit("players:move", {
-      player: { name },
-      move: { x, y },
-    });
-    socket.emit("terrain:chunk", {
-      player: { name: playerName },
-      chunks: terrain.chunks.map((chunk) => chunk.id),
-    });
-    socket.emit("buildings:requestUpdate", {
-      player: { name: playerName },
-    });
-  }
 }
 
 function clampNumber(num, min, max) {

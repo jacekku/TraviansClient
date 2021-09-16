@@ -113,7 +113,8 @@ function preload() {
 }
 
 function setup() {
-  const size = Math.min(600, window.innerWidth);
+  const gameElement = document.querySelector("#game");
+  const size = Math.min(gameElement.offsetHeight, gameElement.offsetWidth);
   let c = createCanvas(size, size);
 
   blockSize = width / frustumSize;
@@ -123,6 +124,12 @@ function setup() {
   noSmooth();
 }
 
+function windowResized() {
+  const gameElement = document.querySelector("#game");
+  const size = Math.min(gameElement.offsetHeight, gameElement.offsetWidth);
+  resizeCanvas(size, size);
+  blockSize = width / frustumSize;
+}
 function draw() {
   background(0);
   if (terrain && terrain.chunks) {
