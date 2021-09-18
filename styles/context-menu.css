@@ -1,0 +1,20 @@
+.menu {
+  position: absolute;
+  background: white;
+  width: fit-content;
+  min-width: 100px;
+  box-shadow: 1px 1px 1px 1px;
+  z-index: 30;
+}
+.menu-header {
+  text-align: center;
+}
+
+.menu-option {
+  padding: 10px;
+  margin: auto;
+}
+
+.menu-option:hover {
+  box-shadow: 1px 1px 1px 1px;
+}

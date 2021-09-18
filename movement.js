@@ -2,10 +2,6 @@ const mvmspeed = 1;
 
 function movePlayer(block) {
   if (!terrain) return;
-  localX = X;
-  localY = Y;
-  console.log(key);
-  console.log(block);
   if (!block) {
     switch (key) {
       case "w":
@@ -42,6 +38,8 @@ function movePlayer(block) {
 }
 
 function sendMovePlayer(name, x, y) {
+  selectedBlock = undefined;
+  toggleMenu("hide");
   x = clampNumber(x, 0, terrain.width - 1);
   y = clampNumber(y, 0, terrain.height - 1);
   if (socket) {
@@ -103,4 +101,27 @@ window.addEventListener("load", () => {
   document
     .querySelector(".movement .down-right")
     .addEventListener("click", moveDownRight);
+
+  document.querySelector(".movement .up").addEventListener("touchend", moveUp);
+  document
+    .querySelector(".movement .down")
+    .addEventListener("touchend", moveDown);
+  document
+    .querySelector(".movement .left")
+    .addEventListener("touchend", moveLeft);
+  document
+    .querySelector(".movement .right")
+    .addEventListener("touchend", moveRight);
+  document
+    .querySelector(".movement .up-left")
+    .addEventListener("touchend", moveUpLeft);
+  document
+    .querySelector(".movement .up-right")
+    .addEventListener("touchend", moveUpRight);
+  document
+    .querySelector(".movement .down-left")
+    .addEventListener("touchend", moveDownLeft);
+  document
+    .querySelector(".movement .down-right")
+    .addEventListener("touchend", moveDownRight);
 });
