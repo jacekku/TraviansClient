@@ -1,3 +1,11 @@
+<script setup lang="ts"></script>
+<template>
+  <div class="menu">
+    <div class="menu-header"></div>
+    <ol class="menu-options"></ol>
+  </div>
+</template>
+<style scoped>
 .menu {
   position: absolute;
   background: white;
@@ -18,3 +26,4 @@
 .menu-option:hover {
   box-shadow: 1px 1px 1px 1px;
 }
+</style>
