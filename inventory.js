@@ -44,6 +44,7 @@ function updateInventory(inventory) {
 }
 
 function __updateShow() {
+  if (currentPanel === "movement") showControls();
   if (currentPanel === "inventory") showInventory();
   if (currentPanel === "crafting") showPossibleCrafting();
   if (currentPanel === "building") showBuildings();
@@ -72,19 +73,26 @@ function showInventory() {
         thisPlayer.inventory.equiped[type].name
       );
     } else {
-      element.firstChild.src = "/assets/items/placeholder/" + type + ".png";
+      element.firstChild.src = "assets/items/placeholder/" + type + ".png";
     }
   });
 }
 
 window.addEventListener("load", (e) => {
+  controlsButton = document.querySelector(".controls-toggle");
   inventoryButton = document.querySelector(".inventory-toggle");
   craftingButton = document.querySelector(".crafting-toggle");
   buildingButton = document.querySelector(".building-toggle");
+  controlsElement = document.querySelector(".controls");
   inventoryElement = document.querySelector(".inventory");
   craftingElement = document.querySelector(".crafting");
   buildingElement = document.querySelector(".building");
   panelList = {
+    controls: {
+      element: controlsElement,
+      button: controlsButton,
+      // callback: showControls,
+    },
     inventory: {
       element: inventoryElement,
       button: inventoryButton,
@@ -112,6 +120,7 @@ window.addEventListener("load", (e) => {
       inventoryItemElement.addEventListener("drop", drop);
       inventoryItemElement.addEventListener("dragover", dragover);
       inventoryItemElement.addEventListener("touchend", doubletaphandler);
+      inventoryItemElement.addEventListener("click", doubletaphandler);
       inventoryItemElement.firstChild.addEventListener("dragstart", drag);
       inventoryItemElement.firstChild.draggable = true;
     }
@@ -121,6 +130,7 @@ window.addEventListener("load", (e) => {
       equipmentItemElement.addEventListener("drop", drop);
       equipmentItemElement.addEventListener("dragover", dragover);
       equipmentItemElement.addEventListener("touchend", doubletaphandler);
+      equipmentItemElement.addEventListener("click", doubletaphandler);
       equipmentItemElement.firstChild.addEventListener("dragstart", drag);
       equipmentItemElement.firstChild.draggable = true;
     }
@@ -379,10 +389,11 @@ function unequipItem(item) {
 let lastTapAtTime = 0;
 
 function doubletaphandler(ev) {
-  if (Date.now() - lastTapAtTime < 1000) {
-    const source =
-      ev.target.parentElement.id || ev.target.parentElement.classList[0];
-    const action = Number.isNaN(Number.parseInt(source)) ? "unequip" : "equip";
+  const source =
+    ev.target.parentElement.id || ev.target.parentElement.classList[0];
+  const action = Number.isNaN(Number.parseInt(source)) ? "unequip" : "equip";
+
+  if (Date.now() - lastTapAtTime < 300) {
     if (action === "equip") {
       if (thisPlayer.inventory.items[source]?.name)
         equipItem(thisPlayer.inventory.items[source]);
@@ -391,6 +402,11 @@ function doubletaphandler(ev) {
       if (thisPlayer.inventory.equiped[source].name)
         unequipItem(thisPlayer.inventory.equiped[source]);
     }
+  } else {
+    document.querySelector(".itemName").innerHTML =
+      action == "equip"
+        ? thisPlayer.inventory.items[source]?.name
+        : thisPlayer.inventory.equiped[source]?.name;
   }
   lastTapAtTime = Date.now();
 }

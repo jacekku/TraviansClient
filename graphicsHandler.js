@@ -1,13 +1,10 @@
 let blockSize = 4;
-const frustumSize = 13;
+const frustumSize = 9;
 
 function drawChunk(chunk) {
   const chunkSize = terrain.chunkSize;
   const chunkX = chunk.x * blockSize;
   const chunkY = chunk.y * blockSize;
-  // strokeWeight(5);
-  // stroke("#f00");
-  // fill("#aaa");
   rect(chunkX, chunkY, chunkSize * blockSize, chunkSize * blockSize);
 }
 
@@ -30,12 +27,8 @@ function drawBuilding(building) {
 }
 
 function drawBlock(block) {
-  // strokeWeight(0.5)
-  // stroke("#222")
   fill(getBlockColor(block));
-  rect(block.x * blockSize, block.y * blockSize, blockSize, blockSize);
-  fill(255);
-  // text(`${block.x},${block.y}`,block.x * blockSize+2,block.y * blockSize+textSize())
+  rect(block.x * blockSize, block.y * blockSize, blockSize + 1, blockSize + 1);
   biomeImg = mapImageToString(block.biome);
   if (biomeImg) {
     image(
@@ -138,10 +131,19 @@ function draw() {
 
     translate(-frustum.x * blockSize, -frustum.y * blockSize);
     const chunks = terrain.chunks;
-    for (chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
-      if (!chunks[chunkIndex]) continue;
+    const frustumChunks = [
+      findChunkByXY(frustum.x, frustum.y),
+      findChunkByXY(frustum.x, frustum.y + frustumSize),
+      findChunkByXY(frustum.x + frustumSize, frustum.y),
+      findChunkByXY(frustum.x + frustumSize, frustum.y + frustumSize),
+    ];
+    const visibleChunks = chunks.filter((chunk) => {
+      return !!frustumChunks.find((XY) => XY.x === chunk.x && XY.y === chunk.y);
+    });
+    for (chunkIndex = 0; chunkIndex < visibleChunks.length; chunkIndex++) {
+      if (!visibleChunks[chunkIndex]) continue;
 
-      const chunk = chunks[chunkIndex];
+      const chunk = visibleChunks[chunkIndex];
       drawChunk(chunk);
       for (blockIndex = 0; blockIndex < chunk.blocks.length; blockIndex++) {
         const block = chunk.blocks[blockIndex];
@@ -159,20 +161,23 @@ function draw() {
         3 * blockSize
       );
     }
-    drawFrustum(frustum);
-    drawPointer(pointer);
+
+    if (selectedBlock) drawSelectedBlock(selectedBlock);
   }
 }
 
-function drawFrustum(frustum) {
+function drawSelectedBlock(selectedBlock) {
+  push();
+  stroke("red");
+  strokeWeight(2);
   noFill();
-  // stroke("#00f")
   rect(
-    frustum.x * blockSize,
-    frustum.y * blockSize,
-    frustumSize * blockSize,
-    frustumSize * blockSize
+    selectedBlock.x * blockSize,
+    selectedBlock.y * blockSize,
+    blockSize,
+    blockSize
   );
+  pop();
 }
 
 function getFrustum(X, Y) {
@@ -218,14 +223,6 @@ function drawPlayers() {
     }
     text(player.name, player.x * blockSize, player.y * blockSize);
   }
-  pop();
-}
-
-function drawPointer(pointer) {
-  push();
-  stroke("red");
-  strokeWeight(2);
-  rect(pointer.x, pointer.y, blockSize, blockSize);
   pop();
 }
 

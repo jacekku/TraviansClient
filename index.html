@@ -10,6 +10,7 @@
     <link rel='stylesheet' href="./styles/inventory.css">
     <link rel='stylesheet' href="./styles/movement.css">
     <link rel='stylesheet' href="./styles/controls.css">
+    <link rel='stylesheet' href="./styles/context-menu.css">
     <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"
         integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous">
     </script>
@@ -17,9 +18,10 @@
     <script src="types.js"></script>
     <script src="contextMenu.js"></script>
     <script src="graphicsHandler.js"></script>
+    <script src="action.js"></script>
     <script src="movement.js"></script>
     <script src="inventory.js"></script>
-    <script src='client.js'></script>
+    <script src="client.js"></script>
 </head>
 
 <body>
@@ -30,13 +32,13 @@
     <div class="game-container">
         <div id='game' class="hidden">
         </div>
-
         <div class="menu">
-            <ul class="menu-options"> </ul>
+            <div class="menu-header"></div>
+            <ol class="menu-options"> </ol>
         </div>
 
         <div class="icon-bar">
-            <img class="movement-toggle" src="assets/movement.png" width="50px">
+            <img class="controls-toggle" src="assets/movement.png" width="50px">
             <img class="inventory-toggle" src="assets/inventory.png" width="50px">
             <img class="crafting-toggle" src="assets/craft.png" width="50px">
             <img class="building-toggle" src="assets/build.png" width="50px">
@@ -162,6 +164,8 @@
                         <p class="stackSize"></p>
                     </div>
                 </div>
+                <p class="itemName"> </p>
+
             </div>
             <div class="crafting" style="visibility: hidden;">
                 <div class="crafting-possibilities"></div>

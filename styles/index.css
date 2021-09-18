@@ -5,38 +5,6 @@
   visibility: hidden;
 }
 
-.menu {
-  width: 120px;
-  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  display: none;
-  z-index: 10;
-}
-
-.menu .menu-options {
-  list-style: none;
-  padding: 10px 0;
-}
-
-.menu .menu-options .menu-option {
-  font-weight: 500;
-  font-size: 14px;
-  padding: 10px 40px 10px 20px;
-  cursor: pointer;
-}
-
-.menu .menu-options {
-  background: rgb(255, 255, 255);
-}
-.menu-option:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.menu-header {
-  text-align: center;
-  text-decoration: underline;
-}
-
 .game {
   margin: 0;
   padding: 0;
@@ -55,14 +23,21 @@ body {
   padding: 0;
   overflow: hidden;
 }
+
 .icon-bar img {
   image-rendering: pixelated;
 }
 
+#login {
+  position: absolute;
+  z-index: 10;
+}
+
 .game-container {
+  position: absolute;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 80% 1fr;
+  grid-template-rows: 90% 1fr;
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -70,6 +45,9 @@ body {
     "icon-bar container";
   width: 100vw;
   height: 100vh;
+  max-width: 1280px;
+  max-height: 720px;
+  border: 1px solid black;
 }
 
 .game {
@@ -80,4 +58,6 @@ body {
 }
 .icon-bar {
   grid-area: icon-bar;
+  margin-top: auto;
+  margin-bottom: 0px;
 }

@@ -1,19 +1,16 @@
 let socket;
-let name;
-let connected = false;
-let X = 1,
-  Y = 1;
 let playerName;
 terrain = {};
 players = "";
 buildings = [];
-console.log(window.location.hostname);
-const URL = window.location.href.includes("warlordsonline.net")
-  ? "https://warlordsonline.net:3000"
-  : "http://" + window.location.hostname + ":3000";
+console.log(window.location);
+const URL =
+  window.location.href.includes("warlordsonline.net") ||
+  window.location.href.includes("ssl.hwcdn.net")
+    ? "https://warlordsonline.net:3000"
+    : "http://" + window.location.hostname + ":3000";
 function connect() {
-  name = document.getElementById("name");
-  playerName = name.value;
+  playerName = document.getElementById("name").value;
   socket = io(URL);
   socket.on("connect", onConnected);
   socket.on("message", (data) => console.log("socket.on message: " + data));

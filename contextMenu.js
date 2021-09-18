@@ -1,12 +1,14 @@
 let menuVisible = false;
 menu = "";
 menuOptions = "";
-selectedBlock = {};
+selectedBlock = undefined;
 lockedBlock = {};
 
 function showOptions(option) {
   menuOptions.innerHTML = "";
-  menuOptions.appendChild(createHeader(option));
+  menuHeader.innerHTML = "";
+
+  menuHeader.appendChild(createHeader(option));
 
   const actions = ACTION_MAPPER[option] || [];
 
@@ -47,7 +49,9 @@ function blockIsAdjacentToPlayer(block, X, Y) {
 
 function showBlockOptions(block) {
   menuOptions.innerHTML = "";
-  menuOptions.appendChild(createHeader("Block Options"));
+  menuHeader.innerHTML = "";
+
+  menuHeader.appendChild(createHeader("Block Options"));
 
   if (blockIsAdjacentToPlayer(block, X, Y)) {
     menuOptions.appendChild(createLi("Move here", movePlayer, block));
@@ -62,7 +66,8 @@ function showBlockOptions(block) {
 
 function showBuildingOptions(building) {
   menuOptions.innerHTML = "";
-  menuOptions.appendChild(createHeader(building.name.toUpperCase()));
+  menuHeader.innerHTML = "";
+  menuHeader.appendChild(createHeader(building.name.toUpperCase()));
 
   const actions = ACTION_MAPPER["BUILDING"] || [];
   actions.forEach((action) => {
@@ -75,7 +80,8 @@ function showBuildingOptions(building) {
 
 function showBlockInfo(block) {
   menuOptions.innerHTML = "";
-  menuOptions.appendChild(createHeader("Block Info"));
+  menuHeader.innerHTML = "";
+  menuHeader.appendChild(createHeader("Block Info"));
   const { animals, moisture, materials, biome } = block;
   if (animals != "NONE")
     menuOptions.appendChild(createLi(animals, showOptions, animals));
@@ -95,9 +101,11 @@ const toggleMenu = (command) => {
 };
 
 const setPosition = ({ top, left }) => {
+  if (left + 200 > window.innerWidth) {
+    left -= menu.offsetWidth;
+  }
   menu.style.left = `${left}px`;
   menu.style.top = `${top}px`;
-  toggleMenu("show");
 };
 
 function findBlock(pointer) {
@@ -116,33 +124,32 @@ function findBlockByXY(blockX, blockY) {
   return chunk.blocks.find((block) => block.x === blockX && block.y === blockY);
 }
 
-function addEventListeners(gameDiv) {
-  function contextMenuEvent(e) {
-    e.preventDefault();
-    const origin = {
-      left: e.pageX || e.changedTouches[0].pageX,
-      top: e.pageY || e.changedTouches[0].pageY,
-    };
-
-    selectedBlock = findBlock(pointer);
-    setPosition(origin);
-    lockedBlock = selectedBlock;
-    showBlockOptions(lockedBlock);
-    return false;
-  }
-
-  gameDiv.addEventListener("contextmenu", contextMenuEvent);
-  gameDiv.addEventListener("touchend", contextMenuEvent);
-
-  window.addEventListener("click", (e) => {
-    if (![...e.path].includes(menu)) {
-      toggleMenu("hide");
-    }
-  });
+function findChunkByXY(blockX, blockY) {
+  return {
+    x: Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize,
+    y: Math.floor(blockY / terrain.chunkSize) * terrain.chunkSize,
+  };
 }
+function contextMenuEvent(e, selectedBlock) {
+  e.preventDefault();
+  const origin = {
+    left: e.pageX || e.changedTouches[0].pageX,
+    top: e.pageY || e.changedTouches[0].pageY,
+  };
+  selectedBlock = selectedBlock || findBlock(pointer);
+  showMenu(selectedBlock, origin);
+  return false;
+}
+
+function showMenu(selectedBlock, origin) {
+  lockedBlock = selectedBlock;
+  showBlockOptions(lockedBlock);
+  toggleMenu("show");
+}
+
 window.addEventListener("load", (_) => {
   menu = document.querySelector(".menu");
+  menuHeader = document.querySelector(".menu-header");
   menuOptions = document.querySelector(".menu-options");
   gameDiv = document.querySelector("#game");
-  addEventListeners(gameDiv);
 });
