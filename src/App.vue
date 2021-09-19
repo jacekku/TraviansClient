@@ -1,72 +1,41 @@
 <script setup lang="ts">
-import Login from "./components/Login.vue";
 import ContextMenu from "./components/ContextMenu.vue";
-import Inventory from "./components/Inventory.vue";
-import Controls from "./components/Controls.vue";
-import Crafting from "./components/Crafting.vue";
-import Building from "./components/Building.vue";
 import IconBar from "./components/IconBar.vue";
+import Login from "./components/login/Login.vue";
+import Canvas from "./components/game/Canvas.vue";
+import SideBar from "./components/sidebar/SideBar.vue";
 </script>
 
 <template>
   <Login></Login>
-  <ContextMenu></ContextMenu>
-  <div class="container">
-    <Controls></Controls>
-    <Inventory></Inventory>
-    <Crafting></Crafting>
-    <Building></Building>
+  <!-- <ContextMenu></ContextMenu> -->
+  <div class="game-container">
+    <Canvas></Canvas>
     <IconBar></IconBar>
+    <SideBar></SideBar>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+img {
+  image-rendering: pixelated;
 }
 
 .inactive {
   opacity: 0.5;
 }
 
-.visible {
-  visibility: visible;
-}
-.hidden {
-  visibility: hidden;
-}
-
-.game {
-  margin: 0;
-  padding: 0;
-  border: 2px solid black;
-}
-
 canvas {
   margin: 0;
   padding: 0;
-  width: inherit;
-  height: inherit;
+  width: 100%;
+  height: 100%;
 }
 
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-.icon-bar img {
-  image-rendering: pixelated;
-}
-
-#login {
-  position: absolute;
-  z-index: 10;
 }
 
 .game-container {
@@ -86,15 +55,21 @@ body {
   border: 1px solid black;
 }
 
-.game {
-  grid-area: game;
+:root {
+  --scale-value: 4;
 }
-.container {
-  grid-area: container;
+
+.item img {
+  image-rendering: pixelated;
+  width: 100%;
+  height: 100%;
+  position: absolute;
 }
-.icon-bar {
-  grid-area: icon-bar;
-  margin-top: auto;
-  margin-bottom: 0px;
+
+.item {
+  border: 1px solid black;
+  position: relative;
+  width: 4vw;
+  height: 4vw;
 }
 </style>

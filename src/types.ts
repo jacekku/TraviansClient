@@ -14,3 +14,14 @@ const ACTION_MAPPER = {
   BEACH: ["GATHER SAND"],
   BUILDING: ["DEMOLISH", "UPGRADE"],
 };
+
+const MUTATION_TYPE = {
+  setInventory: "setInventory",
+  addChunk: "addChunk",
+  setTerrain: "setTerrain",
+  setPlayers: "setPlayers",
+  setPlayer: "setPlayer",
+  setPanel: "setPanel",
+  setDefinitions: "setDefinitions",
+};
+export { ACTION_MAPPER, MUTATION_TYPE };
