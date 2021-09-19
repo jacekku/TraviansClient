@@ -106,7 +106,7 @@ function preload() {
 }
 
 function setup() {
-  const gameElement = document.querySelector("#game");
+  const gameElement = document.querySelector(".game");
   const size = Math.min(gameElement.offsetHeight, gameElement.offsetWidth);
   let c = createCanvas(size, size);
 
@@ -118,7 +118,7 @@ function setup() {
 }
 
 function windowResized() {
-  const gameElement = document.querySelector("#game");
+  const gameElement = document.querySelector(".game");
   const size = Math.min(gameElement.offsetHeight, gameElement.offsetWidth);
   resizeCanvas(size, size);
   blockSize = width / frustumSize;
