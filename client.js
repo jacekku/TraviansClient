@@ -55,7 +55,6 @@ function onConnected() {
       name: playerName,
     },
   });
-  socket.emit("players:requestUpdate", { player: { name: playerName } });
   fetch(URL + "/state/definitions")
     .then((data) => data.json())
     .then((data) => {
@@ -66,7 +65,11 @@ function onConnected() {
       BUILDINGS = data.buildingDefinitions;
       return data;
     })
-    .then((_) => socket.emit("items:update", { player: { name: playerName } }));
+    .then((_) => 
+    
+    socket.emit("players:requestUpdate", { player: { name: playerName } });
+
+    socket.emit("items:update", { player: { name: playerName } }));
   socket.emit("terrain:info");
   socket.emit("terrain:chunk", { player: { name: playerName }, chunks: [] });
   socket.emit("buildings:requestUpdate", { player: { name: playerName } });

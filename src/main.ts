@@ -12,6 +12,7 @@ const store = createStore({
       terrain: {},
       chunks: [],
       players: [],
+      buildings: [],
       panel: "inventory",
       buildingDefinitions: [],
       itemDefinitions: [],
@@ -28,7 +29,7 @@ const store = createStore({
     },
 
     [MUTATION_TYPE.addChunk](state: any, newChunk) {
-      state.chunks.push(newChunk);
+      state.chunks.push(...newChunk);
     },
 
     [MUTATION_TYPE.setTerrain](state: any, newTerrain) {
@@ -49,6 +50,9 @@ const store = createStore({
       state.itemDefinitions = payload.itemDefinitions;
       state.buildingDefinitions = payload.buildingDefinitions;
       state.facilitiesDefinitions = payload.facilitiesDefinitions;
+    },
+    [MUTATION_TYPE.setBuildings](state: any, buildings: any) {
+      state.buildings = buildings;
     },
   },
 });

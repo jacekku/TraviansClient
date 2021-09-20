@@ -1,5 +1,6 @@
 <script lang="ts">
 import { socket } from "../../socket";
+import { MUTATION_TYPE } from "../../types";
 export default {
   data() {
     return {
@@ -8,11 +9,11 @@ export default {
   },
   methods: {
     connect: function () {
-      socket.emit("players:connect", {
-        player: {
-          name: (this as any).$data.playerName,
-        },
-      });
+      const player = {
+        name: (this as any).$data.playerName,
+      };
+      this.$store.commit(MUTATION_TYPE.setPlayer, player);
+      socket.emit("players:connect", { player });
     },
   },
 };

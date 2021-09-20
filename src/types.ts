@@ -23,5 +23,6 @@ const MUTATION_TYPE = {
   setPlayer: "setPlayer",
   setPanel: "setPanel",
   setDefinitions: "setDefinitions",
+  setBuildings: "setBuildings",
 };
 export { ACTION_MAPPER, MUTATION_TYPE };

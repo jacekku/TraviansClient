@@ -1,16 +1,18 @@
 <script lang="ts">
+import { sendMovePlayer } from "../../socket";
+
 export default {
   data() {
     return {
       directions: [
-        "left",
-        "right",
-        "up",
-        "down",
-        "up-left",
-        "up-right",
-        "down-left",
-        "down-right",
+        { direction: "left", method: this.moveLeft },
+        { direction: "right", method: this.moveRight },
+        { direction: "up", method: this.moveUp },
+        { direction: "down", method: this.moveDown },
+        { direction: "up-left", method: this.moveUpLeft },
+        { direction: "up-right", method: this.moveUpRight },
+        { direction: "down-left", method: this.moveDownLeft },
+        { direction: "down-right", method: this.moveDownRight },
       ],
     };
   },
@@ -19,18 +21,63 @@ export default {
       return this.$store.state.panel;
     },
   },
+  methods: {
+    necessaryData(): any {
+      return {
+        player: this.$store.state.player,
+        terrain: this.$store.state.terrain,
+        chunks: this.$store.state.chunks,
+      };
+    },
+    moveDown() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x, player.y + 1, terrain, chunks);
+    },
+    moveUp() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x, player.y - 1, terrain, chunks);
+    },
+    moveLeft() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x - 1, player.y, terrain, chunks);
+    },
+    moveRight() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x + 1, player.y, terrain, chunks);
+    },
+    moveDownLeft() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x - 1, player.y + 1, terrain, chunks);
+    },
+    moveDownRight() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x + 1, player.y + 1, terrain, chunks);
+    },
+    moveUpLeft() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x - 1, player.y - 1, terrain, chunks);
+    },
+    moveUpRight() {
+      const { player, terrain, chunks } = this.necessaryData();
+      sendMovePlayer(player.name, player.x + 1, player.y - 1, terrain, chunks);
+    },
+  },
 };
 </script>
 
 <template>
   <div v-if="panel == 'controls'" class="controls">
     <div class="actions">
-      <div v-for="dir in directions" v-bind:class="dir">
+      <div v-for="dir in directions" v-bind:class="dir.direction">
         <img src="src/assets/movement-cardinal.png" />
       </div>
     </div>
     <div class="movement">
-      <div v-for="dir in directions" v-bind:class="dir">
+      <div
+        v-for="dir in directions"
+        v-bind:class="dir.direction"
+        @click="dir.method"
+      >
         <img src="src/assets/movement-cardinal.png" />
       </div>
     </div>
