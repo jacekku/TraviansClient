@@ -4,9 +4,11 @@ import IconBar from "./components/IconBar.vue";
 import Login from "./components/login/Login.vue";
 import Canvas from "./components/game/Canvas.vue";
 import SideBar from "./components/sidebar/SideBar.vue";
+import SocketWrapper from "./components/SocketWrapper.vue";
 </script>
 
 <template>
+  <SocketWrapper></SocketWrapper>
   <Login></Login>
   <!-- <ContextMenu></ContextMenu> -->
   <div class="game-container">
@@ -23,13 +25,6 @@ img {
 
 .inactive {
   opacity: 0.5;
-}
-
-canvas {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
 }
 
 body {
