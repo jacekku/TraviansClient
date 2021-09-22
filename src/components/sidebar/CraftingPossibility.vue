@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Item from "../Item.vue";
 import ArrowItem from "../ArrowItem.vue";
+import { eventNames } from "node:process";
 </script>
 <script lang="ts">
 export default {
@@ -18,12 +19,18 @@ export default {
       });
     },
   },
+  methods: {
+    craftItem(itemName: string) {
+      const ev = new CustomEvent("craft", { detail: itemName });
+      dispatchEvent(ev);
+    },
+  },
 };
 </script>
 
 <template>
   <div class="crafting-possibility">
-    <Item :imageSource="name" imageType="ITEM" />
+    <Item :imageSource="name" imageType="ITEM" @click="craftItem(name)" />
     <ArrowItem />
     <Item
       v-for="item in sourceItems"

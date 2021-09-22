@@ -6,6 +6,8 @@ import { defineComponent } from "vue";
 export default defineComponent({
   mounted() {
     window.addEventListener("move", this.handleEvent);
+    window.addEventListener("craft", this.handleCraft);
+    window.addEventListener("build", this.handleBuild);
     socket.on("exception", (data) => alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
@@ -21,6 +23,15 @@ export default defineComponent({
     socket.on("items:update", this.onItemsUpdate);
   },
   methods: {
+    handleBuild({ detail }) {},
+    handleCraft({ detail }) {
+      const { player } = this.necessaryData();
+      if (!player.name) return;
+      socket.emit("items:craft", {
+        player,
+        itemToCraft: { name: detail },
+      });
+    },
     handleEvent({ detail }) {
       this.$store.commit(MUTATION_TYPE.setSelectedBlock, {});
 
