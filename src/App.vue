@@ -63,6 +63,7 @@ body {
   max-width: 1280px;
   max-height: 720px;
   border: 1px solid black;
+  overflow: hidden;
 }
 
 .game-grid {
