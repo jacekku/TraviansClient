@@ -23,7 +23,15 @@ export default defineComponent({
     socket.on("items:update", this.onItemsUpdate);
   },
   methods: {
-    handleBuild({ detail }) {},
+    handleBuild({ detail }) {
+      const { player, selectedBlock } = this.necessaryData();
+      if (!player.name) return;
+      socket.emit("buildings:create", {
+        player,
+        building: { name: detail },
+        block: selectedBlock,
+      });
+    },
     handleCraft({ detail }) {
       const { player } = this.necessaryData();
       if (!player.name) return;
@@ -116,6 +124,7 @@ export default defineComponent({
         player: this.$store.state.player,
         terrain: this.$store.state.terrain,
         chunks: this.$store.state.chunks,
+        selectedBlock: this.$store.state.selectedBlock,
       };
     },
     moveDown() {

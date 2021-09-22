@@ -33,12 +33,18 @@ export default {
       });
     },
   },
+  methods: {
+    build(buildingName: string) {
+      const ev = new CustomEvent("build", { detail: buildingName });
+      dispatchEvent(ev);
+    },
+  },
 };
 </script>
 
 <template>
   <div class="building-possibility">
-    <Item :imageSource="name" imageType="BUILDING" />
+    <Item :imageSource="name" imageType="BUILDING" @click="build(name)" />
     <div v-if="baseBuilding">
       <ArrowItem />
       <Item :imageSource="baseBuilding" imageType="BUILDING" />
