@@ -62,10 +62,6 @@ export default {
   display: flex;
 }
 
-.container {
-  overflow: hidden;
-}
-
 .crafting {
   width: inherit;
   height: inherit;
@@ -159,15 +155,5 @@ export default {
 
 .ring {
   grid-area: ring;
-}
-
-.container .inventory {
-  position: absolute;
-}
-.container .crafting {
-  position: absolute;
-}
-.container .building {
-  position: absolute;
 }
 </style>

@@ -17,6 +17,8 @@ const store = createStore({
       buildingDefinitions: [],
       itemDefinitions: [],
       facilitiesDefinitions: [],
+      selectedBlock: {},
+      selectedBuilding: {},
     };
   },
   mutations: {
@@ -53,6 +55,12 @@ const store = createStore({
     },
     [MUTATION_TYPE.setBuildings](state: any, buildings: any) {
       state.buildings = buildings;
+    },
+    [MUTATION_TYPE.setSelectedBlock](state: any, block: any) {
+      state.selectedBlock = block;
+    },
+    [MUTATION_TYPE.setSelectedBuilding](state: any, building: any) {
+      state.selectedBuilding = building;
     },
   },
 });

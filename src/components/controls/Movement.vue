@@ -1,4 +1,5 @@
 <script lang="ts">
+import { MUTATION_TYPE } from "../../types";
 export default {
   data() {
     return {
@@ -26,11 +27,6 @@ export default {
       ],
     };
   },
-  computed: {
-    panel(): string {
-      return this.$store.state.panel;
-    },
-  },
   methods: {
     emitEvent(eventName: string, option: string) {
       const ev = new CustomEvent(eventName, { detail: option });
@@ -40,6 +36,14 @@ export default {
 };
 </script>
 
-<template></template>
-
-<style scoped></style>
+<template>
+  <div class="movement">
+    <div
+      v-for="dir in directions"
+      v-bind:class="dir.direction"
+      @click="dir.method"
+    >
+      <img src="src/assets/movement-cardinal.png" />
+    </div>
+  </div>
+</template>
