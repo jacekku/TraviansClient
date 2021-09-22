@@ -6,27 +6,35 @@ import Item from "../Item.vue";
 export default {
   data() {
     return {
-      equipmentTypes: [
-        "chest",
-        "legs",
-        "pauldrons",
-        "head",
-        "gauntlets",
-        "cape",
-        "shirt",
-        "boots",
-        "mainhand",
-        "offhand",
-        "trinket",
-        "ring",
-      ],
-      items: Array.from({ length: 16 }),
+      equiped: {
+        chest: {},
+        legs: {},
+        pauldrons: {},
+        head: {},
+        gauntlets: {},
+        cape: {},
+        shirt: {},
+        boots: {},
+        mainhand: {},
+        offhand: {},
+        trinket: {},
+        ring: {},
+      },
+      items: Array.from({ length: 16 }, () => {
+        return { name: "blank" };
+      }),
     };
   },
 
   computed: {
     panel(): string {
       return this.$store.state.panel;
+    },
+    playerItems() {
+      return this.$store.state.player?.inventory?.items || this.$data.items;
+    },
+    playerEquiped() {
+      return this.$store.state.player?.inventory?.equiped || this.$data.equiped;
     },
   },
   methods: {
@@ -40,17 +48,19 @@ export default {
   <div v-if="panel === 'inventory'" class="inventory">
     <div class="character">
       <Item
-        v-for="type in equipmentTypes"
+        v-for="type in Object.keys(playerEquiped)"
         :className="type"
-        :imageSource="type"
-        imageType="PLACEHOLDER"
+        :imageSource="playerEquiped[type]?.name || type"
+        :imageType="playerEquiped[type].name ? 'ITEM' : 'PLACEHOLDER'"
       ></Item>
     </div>
     <div class="items">
       <Item
-        v-for="(item, index) in items"
-        imageSource="blank"
+        v-for="(item, index) in playerItems"
+        :imageSource="item?.name || 'blank'"
         :id="index"
+        :stackSize="item?.stackSize || 0"
+        imageType="ITEM"
       ></Item>
     </div>
   </div>
