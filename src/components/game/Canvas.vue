@@ -1,36 +1,85 @@
 <script lang="ts">
+import { defineComponent } from "vue";
+
 import CanvasDrawer from "../../canvasDrawer";
 import { draw } from "../../drawingUtils";
-export default {
+export default defineComponent({
   data() {
+    const canvas: HTMLCanvasElement = {} as any;
     return {
       drawer: new CanvasDrawer({} as any),
       frustumSize: 9,
-      canvas: {},
+      canvas,
     };
   },
   created() {
     window.addEventListener("resize", this.onResize);
   },
   mounted() {
-    this.canvas = document.querySelector("canvas");
-    this.canvas.width = this.canvas.offsetWidth;
-    this.canvas.height = this.canvas.offsetHeight;
+    this.canvas = document.querySelector("canvas") as HTMLCanvasElement;
+    const min = Math.min(this.canvas.offsetWidth, this.canvas.offsetHeight);
+    this.canvas.width = min;
+    this.canvas.height = min;
     this.drawer = new CanvasDrawer(this.canvas.getContext("2d") as any);
-
+    window.addEventListener("keydown", this.handleKeyEvent);
     this.render();
   },
   methods: {
     onResize() {
-      const min = Math.max(this.canvas.offsetWidth, this.canvas.offsetHeight);
+      const min = Math.min(this.canvas.offsetWidth, this.canvas.offsetHeight);
       this.canvas.width = min;
       this.canvas.height = min;
       this.drawer = new CanvasDrawer(this.canvas.getContext("2d") as any);
     },
-    blockSize() {
+    handleKeyEvent({ key }) {
+      let option = "";
+      switch (key) {
+        case "w":
+        case "W":
+        case "ArrowUp":
+          option = "up";
+          break;
+        case "x":
+        case "X":
+        case "ArrowDown":
+          option = "down";
+          break;
+        case "a":
+        case "A":
+        case "ArrowLeft":
+          option = "left";
+          break;
+        case "d":
+        case "D":
+        case "ArrowRight":
+          option = "right";
+          break;
+        case "q":
+        case "Q":
+          option = "up-left";
+          break;
+        case "e":
+        case "E":
+          option = "up-right";
+          break;
+        case "z":
+        case "Z":
+          option = "down-left";
+          break;
+        case "c":
+        case "C":
+          option = "down-right";
+          break;
+      }
+
+      const ev = new CustomEvent("move", { detail: option });
+      dispatchEvent(ev);
+    },
+
+    blockSize(): number {
       return this.canvas.width / this.frustumSize;
     },
-    terrain() {
+    terrain(): any {
       return this.$store.state.terrain;
     },
     chunks() {
@@ -60,7 +109,7 @@ export default {
       requestAnimationFrame(this.render);
     },
   },
-};
+});
 </script>
 
 <template>

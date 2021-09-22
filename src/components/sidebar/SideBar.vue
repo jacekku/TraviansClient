@@ -7,7 +7,6 @@ import Inventory from "./Inventory.vue";
 
 <template>
   <div class="container">
-    <Controls></Controls>
     <Inventory></Inventory>
     <Crafting></Crafting>
     <Building></Building>
@@ -23,5 +22,15 @@ import Inventory from "./Inventory.vue";
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+.container .inventory {
+  position: absolute;
+}
+.container .crafting {
+  position: absolute;
+}
+.container .building {
+  position: absolute;
 }
 </style>
