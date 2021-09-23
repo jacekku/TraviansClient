@@ -410,7 +410,6 @@ function doubletaphandler(ev) {
   }
   lastTapAtTime = Date.now();
 }
-
 function createBuilding(block, building) {
   socket.emit("buildings:create", {
     player: thisPlayer,

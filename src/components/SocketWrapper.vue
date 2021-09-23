@@ -8,6 +8,8 @@ export default defineComponent({
     window.addEventListener("move", this.handleEvent);
     window.addEventListener("craft", this.handleCraft);
     window.addEventListener("build", this.handleBuild);
+    window.addEventListener("unequip", this.handleUnequip);
+    window.addEventListener("equip", this.handleEquip);
     socket.on("exception", (data) => alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
@@ -23,6 +25,20 @@ export default defineComponent({
     socket.on("items:update", this.onItemsUpdate);
   },
   methods: {
+    handleUnequip({ detail }) {
+      const { player } = this.necessaryData();
+      socket.emit("items:unequip", {
+        player,
+        itemToUnequip: { name: detail },
+      });
+    },
+    handleEquip({ detail }) {
+      const { player } = this.necessaryData();
+      socket.emit("items:equip", {
+        player,
+        itemToEquip: { name: detail },
+      });
+    },
     handleBuild({ detail }) {
       const { player, selectedBlock } = this.necessaryData();
       if (!player.name) return;
@@ -117,6 +133,7 @@ export default defineComponent({
       this.$store.commit(MUTATION_TYPE.setBuildings, data);
     },
     updateInventory(data: any) {
+      console.log(data);
       this.$store.commit(MUTATION_TYPE.setInventory, data);
     },
     necessaryData(): any {

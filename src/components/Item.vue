@@ -10,7 +10,6 @@ export default {
   methods: {
     mapImageToString(name: string | undefined, TYPE = ""): string {
       const string = name?.toLowerCase();
-      console.log(string);
       let path;
       switch (TYPE) {
         case "BUILDING":
