@@ -1,10 +1,11 @@
 import CanvasDrawer from "./canvasDrawer";
+import { getImage, ImageType } from "./imageUtils";
 import { Block, Terrain, Chunk, PlayerState, Building } from "./model/Models";
 import Utilities from "./Utilities";
 
 const IMAGES: Map<string, any> = new Map();
 const errorImage = new Image();
-errorImage.src = mapImageToString("error");
+errorImage.src = mapImageToString("error", "base");
 
 function loadImage(src: string) {
   return new Promise((resolve, reject) => {
@@ -43,7 +44,7 @@ function drawPlayers(drawer: CanvasDrawer, players: any[], blockSize: number) {
   drawer.fill("white");
   drawer.stroke("black");
   drawer.textSize(10);
-  const img = mapImageToString("knight", "MAP");
+  const img = mapImageToString("knight", "map");
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     if (player && img) {
@@ -107,6 +108,8 @@ function draw(
     }
     drawBuildings(drawer, buildings, blockSize);
     drawPlayers(drawer, players, blockSize);
+    if (selectedBlock) drawSelectedBlock(drawer, selectedBlock, blockSize);
+
     if (playerState.state.includes("building")) {
       drawer.fill("#0f04");
       drawer.rect(
@@ -167,32 +170,14 @@ function drawSelectedBlock(
   drawer.pop();
 }
 
-function mapImageToString(name: string, TYPE: string = "") {
-  const string = name.toLowerCase();
-  if (string == "none") return;
-  let path;
-  switch (TYPE) {
-    case "BUILDING":
-      path = "buildings/";
-      break;
-    case "ITEM":
-      path = "items/";
-    case "MAP":
-      path = "map/";
-      break;
-    default:
-      path = "";
-      break;
-  }
-  const imageName = path + string;
-  if (IMAGES.has(imageName)) {
-    return IMAGES.get(imageName);
-  }
-  loadImage("src/assets/" + path + string + ".png")
-    .then((img) => IMAGES.set(imageName, img))
-    .catch((err: any) => IMAGES.set(imageName, IMAGES.get("error")));
+function mapImageToString(name: string, TYPE: ImageType) {
+  name = name.toLowerCase();
+  if (name == "none") return;
+  if (IMAGES.has(name)) return IMAGES.get(name);
+  loadImage(getImage(name, TYPE))
+    .then((img) => IMAGES.set(name, img))
+    .catch((err: any) => IMAGES.set(name, IMAGES.get("error")));
 
-  IMAGES.set(imageName, IMAGES.get("error"));
   return IMAGES.get("error");
 }
 
@@ -204,7 +189,7 @@ function drawBlock(drawer: CanvasDrawer, block: Block, blockSize: number) {
     blockSize + 1,
     blockSize + 1
   );
-  const biomeImg = mapImageToString(block.biome, "MAP");
+  const biomeImg = mapImageToString(block.biome, "map");
   if (biomeImg) {
     drawer.image(
       biomeImg,
@@ -215,7 +200,7 @@ function drawBlock(drawer: CanvasDrawer, block: Block, blockSize: number) {
     );
   }
 
-  const materialRichnessImg = mapImageToString(block.materials, "MAP");
+  const materialRichnessImg = mapImageToString(block.materials, "map");
   if (materialRichnessImg) {
     drawer.image(
       materialRichnessImg,
@@ -225,7 +210,7 @@ function drawBlock(drawer: CanvasDrawer, block: Block, blockSize: number) {
       blockSize
     );
   }
-  const animalsImg = mapImageToString(block.animals, "MAP");
+  const animalsImg = mapImageToString(block.animals, "map");
   if (animalsImg) {
     drawer.image(
       animalsImg,
@@ -235,7 +220,7 @@ function drawBlock(drawer: CanvasDrawer, block: Block, blockSize: number) {
       blockSize
     );
   }
-  const moistureImg = mapImageToString(block.moisture, "MAP");
+  const moistureImg = mapImageToString(block.moisture, "map");
   if (moistureImg) {
     drawer.image(
       moistureImg,
@@ -280,7 +265,7 @@ function drawBuilding(
   building: { name: string; x: number; y: number },
   blockSize: number
 ) {
-  let img = mapImageToString(building.name, "BUILDING");
+  let img = mapImageToString(building.name, "buildings");
   if (!img) {
     return;
   }

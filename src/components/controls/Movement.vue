@@ -1,8 +1,10 @@
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import arrowImageUrl from "../../assets/movement-cardinal.png";
 export default defineComponent({
   data() {
     return {
+      arrowImageUrl,
       directions: [
         { direction: "left", method: () => this.emitEvent("move", "left") },
         { direction: "right", method: () => this.emitEvent("move", "right") },
@@ -43,7 +45,7 @@ export default defineComponent({
       v-bind:class="dir.direction"
       @click="dir.method"
     >
-      <img src="src/assets/movement-cardinal.png" />
+      <img :src="arrowImageUrl" />
     </div>
   </div>
 </template>

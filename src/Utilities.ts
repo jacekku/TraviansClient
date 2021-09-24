@@ -36,7 +36,7 @@ export default class Utilities {
     let { x, y } = pos;
     if (direction) {
       dir = nMap[direction as Directions];
-      if (!dir) return;
+      if (!dir) return undefined as any;
       x += dir[0];
       y += dir[1];
     }

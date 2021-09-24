@@ -2,8 +2,12 @@
 import { defineComponent } from "@vue/runtime-core";
 import { PlayerState } from "../model/Models";
 import { MUTATION_TYPE } from "../types";
-
+import okTickImage from "../assets/ok-tick.png";
+import noTickImage from "../assets/no-tick.png";
 export default defineComponent({
+  data() {
+    return { okTickImage, noTickImage };
+  },
   computed: {
     buildingName() {
       return this.$store.state.playerState.detail.building;
@@ -32,10 +36,10 @@ export default defineComponent({
 <template>
   <div class="menu" v-if="state == 'building:chosen'">
     <div class="menu-header">Confirm Building</div>
-    <img id="building" :src="'src/assets/buildings/' + buildingName + '.png'" />
+    <img id="building" :src="'../assets/buildings/' + buildingName + '.png'" />
     <div class="options">
-      <img src="src/assets/ok-tick.png" @click="accept()" />
-      <img src="src/assets/no-tick.png" @click="reject()" />
+      <img :src="okTickImage" @click="accept()" />
+      <img :src="noTickImage" @click="reject()" />
     </div>
   </div>
 </template>

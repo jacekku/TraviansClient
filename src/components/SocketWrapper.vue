@@ -2,14 +2,23 @@
 import { sendMovePlayer, socket } from "../socket";
 import { MUTATION_TYPE } from "../types";
 import { defineComponent } from "vue";
+import Utilities from "../Utilities";
 
 export default defineComponent({
+  data() {
+    return { socket: socket };
+  },
   mounted() {
     window.addEventListener("move", this.handleMove as any);
     window.addEventListener("craft", this.handleCraft as any);
     window.addEventListener("build", this.handleBuild as any);
     window.addEventListener("unequip", this.handleUnequip as any);
     window.addEventListener("equip", this.handleEquip as any);
+    window.addEventListener("command", this.sendCommand as any);
+    window.addEventListener(
+      "command:building",
+      this.sendCommandBuilding as any
+    );
     socket.on("exception", (data) => alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
@@ -25,12 +34,41 @@ export default defineComponent({
     socket.on("items:update", this.onItemsUpdate);
   },
   methods: {
+    sendCommand({ detail }: { detail: any }) {
+      const { player, selectedBlock } = this.necessaryData();
+      if (!Utilities.objectNearEachOther(player, selectedBlock)) {
+        alert("you are too far away");
+        return;
+      }
+      socket.emit("items:action", {
+        player,
+        action: detail.command,
+        block: selectedBlock,
+      });
+      this.requestUpdateAll();
+    },
+    sendCommandBuilding({ detail }: { detail: any }) {
+      const { player, selectedBlock, selectedBuilding } = this.necessaryData();
+      if (!Utilities.objectNearEachOther(player, selectedBlock)) {
+        alert("you are too far away");
+        return;
+      }
+      socket.emit("buildings:action", {
+        player,
+        action: detail.command,
+        building: selectedBuilding,
+        block: selectedBlock,
+      });
+      this.requestUpdateAll();
+    },
+
     handleUnequip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       socket.emit("items:unequip", {
         player,
         itemToUnequip: { name: detail },
       });
+      this.requestUpdateAll();
     },
     handleEquip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
@@ -38,6 +76,7 @@ export default defineComponent({
         player,
         itemToEquip: { name: detail },
       });
+      this.requestUpdateAll();
     },
     handleBuild({ detail }: { detail: string }) {
       const { player, selectedBlock } = this.necessaryData();
@@ -47,6 +86,7 @@ export default defineComponent({
         building: { name: detail },
         block: selectedBlock,
       });
+      this.requestUpdateAll();
     },
     handleCraft({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
@@ -55,6 +95,7 @@ export default defineComponent({
         player,
         itemToCraft: { name: detail },
       });
+      this.requestUpdateAll();
     },
     handleMove({ detail }: { detail: string }) {
       this.$store.commit(MUTATION_TYPE.setSelectedBlock, {});
@@ -74,8 +115,16 @@ export default defineComponent({
         "down-left": this.moveDownLeft,
         "down-right": this.moveDownRight,
       };
-      const method = map[detail];
+      const method = (map as any)[detail];
       if (method) method();
+      this.requestUpdateAll();
+    },
+    requestUpdateAll() {
+      const { player } = this.necessaryData();
+      const payload = { player: { name: player.name } };
+      socket.emit("items:update", payload);
+      socket.emit("players:requestUpdate", payload);
+      socket.emit("buildings:requestUpdate", payload);
     },
     onConnected() {
       console.log("onConnected");
@@ -143,6 +192,7 @@ export default defineComponent({
         terrain: this.$store.state.terrain,
         chunks: this.$store.state.chunks,
         selectedBlock: this.$store.state.selectedBlock,
+        selectedBuilding: this.$store.state.selectedBuilding,
       };
     },
     moveDown() {

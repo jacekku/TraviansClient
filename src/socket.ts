@@ -6,7 +6,12 @@ const URL =
   window.location.href.includes("ssl.hwcdn.net")
     ? "https://warlordsonline.net:3000"
     : "http://" + window.location.hostname + ":3000";
-const socket = io(URL, { secure: true, transports: ["websocket"] });
+const socket = io(URL, {
+  reconnection: false,
+  secure: true,
+  transports: ["websocket"],
+  autoConnect: false,
+});
 
 function sendMovePlayer(
   name: string,

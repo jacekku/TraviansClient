@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+import { getImage, ImageType } from "../../imageUtils";
+import { Equiped } from "../../model/Models";
 import Item from "../Item.vue";
 </script>
 
@@ -24,7 +26,7 @@ export default defineComponent({
       items: Array.from({ length: 16 }, () => {
         return { name: "blank" };
       }),
-      selectedItem: { item: {}, type: "" },
+      selectedItem: { item: { name: "", equipable: {} }, type: "" },
     };
   },
   computed: {
@@ -32,15 +34,15 @@ export default defineComponent({
       return this.$store.state.panel;
     },
     playerItems() {
-      return this.$store.state.items || this.$data.items;
+      return this.$store.state.items || (this.$data as any).items;
     },
-    playerEquiped() {
-      return this.$store.state.equiped || this.$data.equiped;
+    playerEquiped(): any {
+      return this.$store.state.equiped || (this.$data as any).equiped;
     },
   },
   methods: {
     imagePath(name: string) {
-      return `src/assets/items/placeholder/${name}.png`;
+      return getImage(name, "placeholder" as ImageType);
     },
     selectItem(item: any, type: "item" | "equipment") {
       this.selectedItem = {
@@ -61,8 +63,8 @@ export default defineComponent({
       <Item
         v-for="type in Object.keys(playerEquiped)"
         :className="type"
-        :imageSource="playerEquiped[type]?.name || type"
-        :imageType="playerEquiped[type].name ? 'ITEM' : 'PLACEHOLDER'"
+        :imageSource="playerEquiped[type].name || type"
+        :imageType="playerEquiped[type].name ? 'items' : 'placeholder'"
         @click="selectItem(playerEquiped[type], 'equipment')"
       ></Item>
     </div>
@@ -70,9 +72,9 @@ export default defineComponent({
       <Item
         v-for="(item, index) in playerItems"
         :imageSource="item?.name || 'blank'"
-        :id="index"
+        :id="index.toString()"
         :stackSize="item?.stackSize || 0"
-        imageType="ITEM"
+        imageType="items"
         @click="selectItem(item, 'item')"
       ></Item>
     </div>

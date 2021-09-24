@@ -13,6 +13,7 @@ import ContextMenu from "./components/ContextMenu.vue";
 </script>
 
 <script lang="ts">
+import { socket } from "./socket";
 export default defineComponent({
   computed: {
     controls() {
@@ -22,6 +23,10 @@ export default defineComponent({
     },
     panel(): string {
       return this.$store.state.panel;
+    },
+    socket() {
+      console.log("socket update in APP");
+      return socket;
     },
   },
 });
@@ -62,7 +67,6 @@ body {
   max-width: 1280px;
   max-height: 720px;
   border: 1px solid black;
-  transition: 2s;
 }
 
 .game-grid {
@@ -81,7 +85,7 @@ body {
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
-    ". game block"
+    ". game options"
     "movement game actions"
     "movement icon-bar actions";
 }
