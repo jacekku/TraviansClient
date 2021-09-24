@@ -5,11 +5,11 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   mounted() {
-    window.addEventListener("move", this.handleEvent);
-    window.addEventListener("craft", this.handleCraft);
-    window.addEventListener("build", this.handleBuild);
-    window.addEventListener("unequip", this.handleUnequip);
-    window.addEventListener("equip", this.handleEquip);
+    window.addEventListener("move", this.handleMove as any);
+    window.addEventListener("craft", this.handleCraft as any);
+    window.addEventListener("build", this.handleBuild as any);
+    window.addEventListener("unequip", this.handleUnequip as any);
+    window.addEventListener("equip", this.handleEquip as any);
     socket.on("exception", (data) => alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
@@ -25,21 +25,21 @@ export default defineComponent({
     socket.on("items:update", this.onItemsUpdate);
   },
   methods: {
-    handleUnequip({ detail }) {
+    handleUnequip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       socket.emit("items:unequip", {
         player,
         itemToUnequip: { name: detail },
       });
     },
-    handleEquip({ detail }) {
+    handleEquip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       socket.emit("items:equip", {
         player,
         itemToEquip: { name: detail },
       });
     },
-    handleBuild({ detail }) {
+    handleBuild({ detail }: { detail: string }) {
       const { player, selectedBlock } = this.necessaryData();
       if (!player.name) return;
       socket.emit("buildings:create", {
@@ -48,7 +48,7 @@ export default defineComponent({
         block: selectedBlock,
       });
     },
-    handleCraft({ detail }) {
+    handleCraft({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       if (!player.name) return;
       socket.emit("items:craft", {
@@ -56,9 +56,11 @@ export default defineComponent({
         itemToCraft: { name: detail },
       });
     },
-    handleEvent({ detail }) {
+    handleMove({ detail }: { detail: string }) {
       this.$store.commit(MUTATION_TYPE.setSelectedBlock, {});
-
+      this.$store.commit(MUTATION_TYPE.setPlayerState, {
+        state: "moving",
+      });
       const data = this.necessaryData();
       if (!data.player.name || !data.terrain.mapId || !data.chunks.length)
         return;
@@ -133,7 +135,6 @@ export default defineComponent({
       this.$store.commit(MUTATION_TYPE.setBuildings, data);
     },
     updateInventory(data: any) {
-      console.log(data);
       this.$store.commit(MUTATION_TYPE.setInventory, data);
     },
     necessaryData(): any {

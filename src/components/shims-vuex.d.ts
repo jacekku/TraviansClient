@@ -2,24 +2,39 @@
 
 import { ComponentCustomProperties } from "vue";
 import { Store } from "vuex";
+import {
+  Block,
+  Building,
+  BuildingDefinition,
+  Chunk,
+  Equiped,
+  FacilitiesDefinition,
+  Item,
+  ItemDefinition,
+  Player,
+  PlayerState,
+  Terrain,
+} from "../model/Models";
 
 declare module "@vue/runtime-core" {
   // Declare your own store states.
   interface State {
-    terrain: any;
-    players: any;
-    buildings: any;
-    player: any;
-    chunks: any;
+    terrain: Terrain;
+    players: Player[];
+    buildings: Building[];
+    player: Player;
+    chunks: Chunk[];
     count: number;
-    items: any[];
-    equiped: object;
+    items: Item[];
+    equiped: Equiped;
     panel: string;
-    buildingDefinitions: any[];
-    itemDefinitions: any[];
-    facilitiesDefinitions: any[];
-    selectedBlock: any;
-    selectedBuilding: any;
+    buildingDefinitions: BuildingDefinition[];
+    itemDefinitions: ItemDefinition[];
+    facilitiesDefinitions: FacilitiesDefinition[];
+    selectedBlock: Block;
+    selectedBuilding: BuildingDefinition;
+    playerState: PlayerState;
+    pointer: { x: number; y: number };
   }
 
   interface ComponentCustomProperties {

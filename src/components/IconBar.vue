@@ -1,5 +1,6 @@
 <script lang="ts">
 import { MUTATION_TYPE } from "../types";
+import Utilities from "../Utilities";
 
 export default {
   data() {
