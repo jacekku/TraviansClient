@@ -24,3 +24,13 @@ export default {
     </div>
   </div>
 </template>
+<style scoped>
+.building {
+  overflow: hidden;
+}
+.building-possibilities {
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>

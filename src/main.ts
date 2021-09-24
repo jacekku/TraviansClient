@@ -3,6 +3,7 @@ import App from "./App.vue";
 import { createStore } from "vuex";
 import { MUTATION_TYPE } from "./types";
 import { URL } from "./socket";
+import { PlayerState } from "./model/Models";
 const store = createStore({
   state() {
     return {
@@ -19,6 +20,7 @@ const store = createStore({
       facilitiesDefinitions: [],
       selectedBlock: {},
       selectedBuilding: {},
+      playerState: { state: "crafting" },
     };
   },
   mutations: {
@@ -61,6 +63,12 @@ const store = createStore({
     },
     [MUTATION_TYPE.setSelectedBuilding](state: any, building: any) {
       state.selectedBuilding = building;
+    },
+    [MUTATION_TYPE.setPlayerState](state: any, playerState: PlayerState) {
+      state.playerState = playerState;
+    },
+    [MUTATION_TYPE.setPointer](state: any, pointer: { x: number; y: number }) {
+      state.pointer = pointer;
     },
   },
 });

@@ -3,6 +3,8 @@ import { defineComponent } from "vue";
 
 import CanvasDrawer from "../../canvasDrawer";
 import { draw } from "../../drawingUtils";
+import { MUTATION_TYPE } from "../../types";
+import Utilities from "../../Utilities";
 export default defineComponent({
   data() {
     const canvas: HTMLCanvasElement = {} as any;
@@ -10,6 +12,7 @@ export default defineComponent({
       drawer: new CanvasDrawer({} as any),
       frustumSize: 9,
       canvas,
+      pointer: { x: 0, y: 0 },
     };
   },
   created() {
@@ -22,9 +25,62 @@ export default defineComponent({
     this.canvas.height = min;
     this.drawer = new CanvasDrawer(this.canvas.getContext("2d") as any);
     window.addEventListener("keydown", this.handleKeyEvent);
+    window.addEventListener("mousemove", this.handleMouseMove);
+    window.addEventListener("mousedown", this.handleMouseClick);
+    window.addEventListener("touchend", this.handleMouseClick);
     this.render();
   },
   methods: {
+    handleMouseClick(e: MouseEvent | TouchEvent) {
+      this.updatePointer(e);
+      const playerState = this.$store.state.playerState;
+
+      if (playerState.state.includes("building")) {
+        const { block } = Utilities.selectBlock(
+          this.pointer,
+          this.terrain(),
+          this.chunks(),
+          this.buildings()
+        );
+        this.$store.commit(MUTATION_TYPE.setSelectedBlock, block);
+        const nearPlayer = Utilities.objectNearEachOther(
+          { x: this.thisPlayer().x, y: this.thisPlayer().y },
+          this.selectedBlock() || { x: -10, y: -10 }
+        );
+        if (!nearPlayer) return;
+        this.$store.commit(MUTATION_TYPE.setPlayerState, {
+          state: "building:chosen",
+          detail: {
+            pointer: { ...this.pointer },
+            building: playerState.detail.building,
+          },
+        });
+      }
+    },
+    updatePointer(e: MouseEvent | TouchEvent) {
+      const frustum = Utilities.getFrustum(
+        this.thisPlayer(),
+        this.terrain(),
+        this.frustumSize
+      );
+      const { x, y } = Utilities.getPointer(
+        {
+          x:
+            (e as MouseEvent).clientX ||
+            (e as TouchEvent).changedTouches[0].clientX,
+          y:
+            (e as MouseEvent).clientY ||
+            (e as TouchEvent).changedTouches[0].clientY,
+        },
+        frustum,
+        this.blockSize()
+      );
+      this.pointer.x = x;
+      this.pointer.y = y;
+    },
+    handleMouseMove(e: MouseEvent | TouchEvent) {
+      this.updatePointer(e);
+    },
     onResize() {
       const min = Math.min(this.canvas.offsetWidth, this.canvas.offsetHeight);
       this.canvas.width = min;
@@ -94,6 +150,12 @@ export default defineComponent({
     buildings() {
       return this.$store.state.buildings;
     },
+    playerState() {
+      return this.$store.state.playerState;
+    },
+    selectedBlock() {
+      return this.$store.state.selectedBlock;
+    },
     render() {
       draw(
         this.drawer,
@@ -103,7 +165,10 @@ export default defineComponent({
         this.thisPlayer(),
         this.buildings(),
         this.blockSize(),
-        this.frustumSize
+        this.frustumSize,
+        this.playerState(),
+        this.pointer,
+        this.selectedBlock()
       );
 
       requestAnimationFrame(this.render);

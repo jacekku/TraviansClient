@@ -26,5 +26,7 @@ const MUTATION_TYPE = {
   setBuildings: "setBuildings",
   setSelectedBlock: "setSelectedBlock",
   setSelectedBuilding: "setSelectedBuilding",
+  setPlayerState: "setPlayerState",
+  setPointer: "setPointer",
 };
 export { ACTION_MAPPER, MUTATION_TYPE };

@@ -1,29 +1,6 @@
 import CanvasDrawer from "./canvasDrawer";
+import { Block, Terrain, Chunk, PlayerState, Building } from "./model/Models";
 import Utilities from "./Utilities";
-type Block = {
-  x: number;
-  y: number;
-  biome: string;
-  materials: string;
-  animals: string;
-  moisture: string;
-  id: number;
-};
-
-type Chunk = {
-  x: number;
-  y: number;
-  blocks: Block[];
-};
-
-type Terrain = {
-  chunkSize: number;
-  chunks: Chunk[];
-  mapId: string;
-  chunkNumber: number;
-  width: number;
-  height: number;
-};
 
 const IMAGES: Map<string, any> = new Map();
 const errorImage = new Image();
@@ -83,28 +60,6 @@ function drawPlayers(drawer: CanvasDrawer, players: any[], blockSize: number) {
   drawer.pop();
 }
 
-function getFrustum(
-  X: number,
-  Y: number,
-  terrain: Terrain,
-  frustumSize: number
-) {
-  let x = Utilities.clampNumber(
-    X - Math.floor(frustumSize / 2),
-    0,
-    terrain.width - frustumSize
-  );
-  let y = Utilities.clampNumber(
-    Y - Math.floor(frustumSize / 2),
-    0,
-    terrain.height - frustumSize
-  );
-  return {
-    x,
-    y,
-  };
-}
-
 function findChunkByXY(blockX: number, blockY: number, terrain: Terrain) {
   return {
     x: Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize,
@@ -115,21 +70,19 @@ function draw(
   drawer: CanvasDrawer,
   terrain: Terrain,
   chunks: Chunk[],
-  players: [{ x: number; y: number }],
+  players: { x: number; y: number }[],
   thisPlayer: { x: number; y: number },
-  buildings: any[],
+  buildings: Building[],
   blockSize: number,
-  frustumSize: number
+  frustumSize: number,
+  playerState: PlayerState,
+  pointer: { x: number; y: number },
+  selectedBlock: Block
 ) {
   drawer.background("gray");
   drawer.push();
   if (terrain && chunks) {
-    const frustum = getFrustum(
-      thisPlayer.x,
-      thisPlayer.y,
-      terrain,
-      frustumSize
-    );
+    const frustum = Utilities.getFrustum(thisPlayer, terrain, frustumSize);
     // pointer = getPointer(frustum);
     drawer.translate(-frustum.x * blockSize, -frustum.y * blockSize);
 
@@ -146,7 +99,7 @@ function draw(
       if (!visibleChunks[chunkIndex]) continue;
 
       const chunk = visibleChunks[chunkIndex];
-      drawChunk(drawer, terrain, chunk, blockSize);
+      // drawChunk(drawer, terrain, chunk, blockSize);
       for (let blockIndex = 0; blockIndex < chunk.blocks.length; blockIndex++) {
         const block = chunk.blocks[blockIndex];
         drawBlock(drawer, block, blockSize);
@@ -154,15 +107,44 @@ function draw(
     }
     drawBuildings(drawer, buildings, blockSize);
     drawPlayers(drawer, players, blockSize);
-    // if (currentPanel == "crafting" && showPanel) {
-    //   drawer.fill("#0f04");
-    //   drawer.rect(
-    //     thisPlayer.x * blockSize - blockSize,
-    //     thisPlayer.y * blockSize - blockSize,
-    //     3 * blockSize,
-    //     3 * blockSize
-    //   );
-    // }
+    if (playerState.state.includes("building")) {
+      drawer.fill("#0f04");
+      drawer.rect(
+        thisPlayer.x * blockSize - blockSize,
+        thisPlayer.y * blockSize - blockSize,
+        3 * blockSize,
+        3 * blockSize
+      );
+      const block = Utilities.findBlockByXY(
+        pointer.x,
+        pointer.y,
+        terrain,
+        chunks
+      );
+      const nearPlayer = Utilities.objectNearEachOther(
+        { x: thisPlayer.x, y: thisPlayer.y },
+        block || { x: -10, y: -10 }
+      );
+      if (nearPlayer && block) {
+        drawBuilding(
+          drawer,
+          { name: playerState.detail.building, x: block.x, y: block.y },
+          blockSize
+        );
+        drawSelectedBlock(drawer, block, blockSize);
+      }
+    }
+    if (playerState.state == "building:chosen" && selectedBlock) {
+      drawBuilding(
+        drawer,
+        {
+          name: playerState.detail.building,
+          x: selectedBlock.x,
+          y: selectedBlock.y,
+        },
+        blockSize
+      );
+    }
 
     // if (selectedBlock) drawSelectedBlock(selectedBlock);
     drawer.pop();
@@ -176,7 +158,7 @@ function drawSelectedBlock(
 ) {
   drawer.push();
   drawer.stroke("red");
-  drawer.rect(
+  drawer.strokeRect(
     selectedBlock.x * blockSize,
     selectedBlock.y * blockSize,
     blockSize,

@@ -1,6 +1,6 @@
 <script lang="ts">
-import { MUTATION_TYPE } from "../../types";
-export default {
+import { defineComponent } from "@vue/runtime-core";
+export default defineComponent({
   data() {
     return {
       directions: [
@@ -33,7 +33,7 @@ export default {
       dispatchEvent(ev);
     },
   },
-};
+});
 </script>
 
 <template>

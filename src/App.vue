@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ContextMenu from "./components/ContextMenu.vue";
 import IconBar from "./components/IconBar.vue";
 import Login from "./components/login/Login.vue";
 import Canvas from "./components/game/Canvas.vue";
@@ -9,10 +8,12 @@ import Controls from "./components/sidebar/Controls.vue";
 import Movement from "./components/controls/Movement.vue";
 import Actions from "./components/controls/Actions.vue";
 import Block from "./components/controls/Block.vue";
+import { defineComponent } from "@vue/runtime-core";
+import ContextMenu from "./components/ContextMenu.vue";
 </script>
 
 <script lang="ts">
-export default {
+export default defineComponent({
   computed: {
     controls() {
       return this.$store.state.panel == "controls"
@@ -23,13 +24,13 @@ export default {
       return this.$store.state.panel;
     },
   },
-};
+});
 </script>
 
 <template>
   <SocketWrapper></SocketWrapper>
   <Login></Login>
-  <!-- <ContextMenu></ContextMenu> -->
+  <ContextMenu></ContextMenu>
   <div class="game-container" :class="controls">
     <Canvas></Canvas>
     <IconBar></IconBar>
@@ -52,18 +53,16 @@ img {
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 
 .game-container {
-  position: absolute;
   display: grid;
   width: 100vw;
   height: 100vh;
   max-width: 1280px;
   max-height: 720px;
   border: 1px solid black;
-  overflow: hidden;
+  transition: 2s;
 }
 
 .game-grid {
@@ -107,8 +106,8 @@ body {
 
 .movement {
   grid-area: movement;
-  margin-top: auto;
   margin-bottom: 0px;
+  margin-top: auto;
 }
 
 .actions {
@@ -152,8 +151,8 @@ body {
 
 .movement,
 .actions {
-  position: absolute;
   display: grid;
+  place-items: center;
   grid-template-areas:
     "up-left up up-right"
     "left . right"
@@ -161,12 +160,5 @@ body {
   margin: auto;
   width: 100%;
   height: 100%;
-}
-
-.movement > div,
-.actions > div {
-  width: fit-content;
-  height: fit-content;
-  margin: auto;
 }
 </style>

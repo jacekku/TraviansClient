@@ -15,22 +15,10 @@ import Inventory from "./Inventory.vue";
 
 <style scoped>
 .container div {
-  position: absolute;
+  position: relative;
 }
 .container {
   grid-area: container;
-  height: 100%;
-  width: 100%;
   overflow: hidden;
-}
-
-.container .inventory {
-  position: absolute;
-}
-.container .crafting {
-  position: absolute;
-}
-.container .building {
-  position: absolute;
 }
 </style>

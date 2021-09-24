@@ -1,7 +1,10 @@
 <script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
+import { Directions } from "../../model/Models";
 import { MUTATION_TYPE } from "../../types";
+import Utilities from "../../Utilities";
 
-export default {
+export default defineComponent({
   data() {
     return {
       directions: [
@@ -23,47 +26,23 @@ export default {
     };
   },
   methods: {
-    findBlockByXY(blockX: number, blockY: number, terrain: any, chunks: any[]) {
-      const chunkX = Math.floor(blockX / terrain.chunkSize) * terrain.chunkSize;
-      const chunkY = Math.floor(blockY / terrain.chunkSize) * terrain.chunkSize;
-      const chunk = chunks.find((ch) => ch.x === chunkX && ch.y === chunkY);
-      return chunk.blocks.find(
-        (block: any) => block.x === blockX && block.y === blockY
-      );
-    },
-
-    findBuilding(blockX: number, blockY: number, buildings: any[]) {
-      return buildings.find(
-        (building) => building.x == blockX && building.y == blockY
-      );
-    },
-
-    selectBlock(direction: string) {
-      let { x, y } = this.$store.state.player;
+    selectBlock(direction: Directions) {
+      const player = this.$store.state.player;
       const chunks = this.$store.state.chunks;
       const terrain = this.$store.state.terrain;
-      const nMap = {
-        "up-left": [-1, -1],
-        up: [0, -1],
-        "up-right": [1, -1],
-        left: [-1, 0],
-        right: [1, 0],
-        "down-left": [-1, 1],
-        down: [0, 1],
-        "down-right": [1, 1],
-      };
-      const dir = nMap[direction];
-      if (!dir) return;
-      x += dir[0];
-      y += dir[1];
-      const block = this.findBlockByXY(x, y, terrain, chunks);
-      this.$store.commit(MUTATION_TYPE.setSelectedBlock, block);
       const buildings = this.$store.state.buildings;
-      const building = this.findBuilding(x, y, buildings);
+      const { block, building } = Utilities.selectBlock(
+        player,
+        terrain,
+        chunks,
+        buildings,
+        direction
+      );
+      this.$store.commit(MUTATION_TYPE.setSelectedBlock, block);
       this.$store.commit(MUTATION_TYPE.setSelectedBuilding, building);
     },
   },
-};
+});
 </script>
 
 <template>
