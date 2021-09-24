@@ -1,10 +1,12 @@
 <script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
 import { socket } from "../../socket";
 import { MUTATION_TYPE } from "../../types";
-export default {
+export default defineComponent({
   data() {
     return {
       playerName: "",
+      socket: socket,
     };
   },
   methods: {
@@ -13,19 +15,17 @@ export default {
         name: (this as any).$data.playerName,
       };
       this.$store.commit(MUTATION_TYPE.setPlayer, player);
-      socket.emit("players:connect", { player });
+      this.socket.connect();
+      this.socket.emit("players:connect", { player });
     },
   },
-};
+});
 </script>
 <template>
-  <div class="login">
-    <input
-      type="text"
-      v-bind:value="playerName"
-      v-on:input="playerName = $event.target.value"
-    />
+  <div class="login" v-if="socket.disconnected">
+    <input type="text" v-model="playerName" />
     <button @click="connect">connect</button>
+    <h1 v-if="!socket.connected">disconnected</h1>
   </div>
 </template>
 
@@ -33,5 +33,11 @@ export default {
 .login {
   position: absolute;
   z-index: 10;
+}
+h1 {
+  position: absolute;
+  text-align: center;
+  font-size: 5em;
+  color: red;
 }
 </style>

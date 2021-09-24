@@ -18,7 +18,7 @@ export default defineComponent({
   },
   computed: {
     sourceItems(): typeof Item[] {
-      return this.$props.craftable.sourceItems.map((item: ItemDefinition) => {
+      return this.$props.craftable!.sourceItems.map((item: ItemDefinition) => {
         return {
           name: item.name || item,
           requiredAmount: item.requiredAmount || 1,
@@ -32,12 +32,15 @@ export default defineComponent({
         .filter((building) => Utilities.objectNearEachOther(building, player))
         .map((building) => building.name);
     },
-    collapsedInventory() {
+    collapsedInventory(): any {
       const items = this.$store.state.items;
       const collapsed: Map<string, number> = new Map();
       items.filter(Boolean).forEach((item) => {
         collapsed.has(item.name)
-          ? collapsed.set(item.name, collapsed.get(item.name) + item.stackSize)
+          ? collapsed.set(
+              item.name,
+              (collapsed as any).get(item.name) + item.stackSize
+            )
           : collapsed.set(item.name, item.stackSize);
       });
       return collapsed;
@@ -54,14 +57,16 @@ export default defineComponent({
         .filter((building: any) => {
           return building.craftingFacilities.filter(
             (facility: CraftingFacility) =>
-              this.craftable.facility.find((f: string) => f == facility.name)
+              (this as any).craftable.facility.find(
+                (f: string) => f == facility.name
+              )
           ).length;
         })
         .map((building: any) => building.name);
     },
   },
   methods: {
-    craftItem(itemName: string) {
+    craftItem(itemName: string | undefined) {
       const ev = new CustomEvent("craft", { detail: itemName });
       dispatchEvent(ev);
     },
@@ -72,13 +77,13 @@ export default defineComponent({
 <template>
   <div class="crafting-possibility">
     {{ name }}
-    <Item :imageSource="name" imageType="ITEM" @click="craftItem(name)" />
+    <Item :imageSource="name" imageType="items" @click="craftItem(name)" />
     source items:
     <div class="source-items">
       <Item
         v-for="item in sourceItems"
         :imageSource="item.name"
-        imageType="ITEM"
+        imageType="items"
         :stackSize="item.requiredAmount"
         :class="
           collapsedInventory.get(item.name) >= item.requiredAmount
@@ -92,7 +97,7 @@ export default defineComponent({
       <Item
         v-for="facility in facilities"
         :imageSource="facility"
-        imageType="BUILDING"
+        imageType="buildings"
         :class="facilitiesNearPlayer.includes(facility) ? '' : 'inactive'"
       />
     </div>

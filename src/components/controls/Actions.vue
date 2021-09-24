@@ -3,10 +3,11 @@ import { defineComponent } from "@vue/runtime-core";
 import { Directions } from "../../model/Models";
 import { MUTATION_TYPE } from "../../types";
 import Utilities from "../../Utilities";
-
+import arrowImageUrl from "../../assets/movement-cardinal.png";
 export default defineComponent({
   data() {
     return {
+      arrowImageUrl,
       directions: [
         { direction: "left", method: () => this.selectBlock("left") },
         { direction: "right", method: () => this.selectBlock("right") },
@@ -52,7 +53,7 @@ export default defineComponent({
       v-bind:class="dir.direction"
       @click="dir.method"
     >
-      <img src="src/assets/movement-cardinal.png" />
+      <img :src="arrowImageUrl" />
     </div>
   </div>
 </template>

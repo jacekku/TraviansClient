@@ -1,4 +1,5 @@
 <script lang="ts">
+import { getImage, ImageType } from "../imageUtils";
 export default {
   props: {
     className: String,
@@ -8,24 +9,8 @@ export default {
   },
 
   methods: {
-    mapImageToString(name: string | undefined, TYPE = ""): string {
-      const string = name?.toLowerCase();
-      let path;
-      switch (TYPE) {
-        case "BUILDING":
-          path = "buildings/";
-          break;
-        case "ITEM":
-          path = "items/";
-          break;
-        case "PLACEHOLDER":
-          path = "items/placeholder/";
-          break;
-        default:
-          path = "";
-          break;
-      }
-      return "src/assets/" + path + string + ".png";
+    getImage(name: any, TYPE: any): any {
+      return getImage(name, TYPE);
     },
   },
 };
@@ -33,7 +18,7 @@ export default {
 
 <template>
   <div :class="className" class="item">
-    <img :src="mapImageToString(imageSource, imageType)" />
+    <img :src="getImage(imageSource, imageType)" />
     <p v-if="stackSize" class="stackSize">{{ stackSize }}</p>
   </div>
 </template>

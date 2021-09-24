@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Item from "../Item.vue";
-import ArrowItem from "../ArrowItem.vue";
 import { Building, Player, PlayerState } from "../../model/Models";
 import Utilities from "../../Utilities";
 import { defineComponent } from "@vue/runtime-core";
@@ -18,7 +17,7 @@ export default defineComponent({
   },
   computed: {
     baseBuilding() {
-      const definitions = (this as any).$store.state.buildingDefinitions;
+      const definitions = this.$store.state.buildingDefinitions;
       const upgradedFrom = definitions
         .filter((def: any) => def.upgrade)
         .filter((def: any) => {
@@ -29,7 +28,7 @@ export default defineComponent({
       return upgradedFrom[0]?.name;
     },
     sourceItems(): any[] {
-      return this.$props.buildable.sourceItems.map((item: any) => {
+      return (this as any).$props.buildable.sourceItems.map((item: any) => {
         return {
           name: item.name || item,
           requiredAmount: item.requiredAmount || 1,
@@ -43,19 +42,22 @@ export default defineComponent({
         .filter((building) => Utilities.objectNearEachOther(building, player))
         .map((building) => building.name);
     },
-    collapsedInventory() {
+    collapsedInventory(): any {
       const items = this.$store.state.items;
       const collapsed: Map<string, number> = new Map();
       items.filter(Boolean).forEach((item) => {
         collapsed.has(item.name)
-          ? collapsed.set(item.name, collapsed.get(item.name) + item.stackSize)
+          ? collapsed.set(
+              item.name,
+              (collapsed as any).get(item.name) + item.stackSize
+            )
           : collapsed.set(item.name, item.stackSize);
       });
       return collapsed;
     },
   },
   methods: {
-    build(buildingName: string) {
+    build(buildingName: string | undefined) {
       this.$store.commit(MUTATION_TYPE.setPlayerState, {
         state: "building",
         detail: { building: buildingName },
@@ -68,12 +70,12 @@ export default defineComponent({
 <template>
   <div class="building-possibility">
     {{ name }}
-    <Item :imageSource="name" imageType="BUILDING" @click="build(name)" />
+    <Item :imageSource="name" imageType="buildings" @click="build(name)" />
     <div v-if="baseBuilding">
       upgrade from:
       <Item
         :imageSource="baseBuilding"
-        imageType="BUILDING"
+        imageType="buildings"
         :class="facilitiesNearPlayer.includes(baseBuilding) ? '' : 'inactive'"
       />
     </div>
@@ -82,7 +84,7 @@ export default defineComponent({
       <Item
         v-for="item in sourceItems"
         :imageSource="item.name"
-        imageType="ITEM"
+        imageType="items"
         :stackSize="item.requiredAmount"
         :class="
           collapsedInventory.get(item.name) >= item.requiredAmount

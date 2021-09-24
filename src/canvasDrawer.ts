@@ -52,7 +52,7 @@ export default class CanvasDrawer {
     this.ctx.strokeStyle = color;
   }
   textSize(size: number) {
-    this.ctx.font = this.ctx.font.replace(/\d+/, size);
+    this.ctx.font = this.ctx.font.replace(/\d+/, size.toString());
   }
   text(text: any, x: number, y: number) {
     this.ctx.fillText(text, x, y);

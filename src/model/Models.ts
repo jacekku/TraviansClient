@@ -77,6 +77,7 @@ export interface Block extends Quad {
   moisture: MOISTURE;
   materials: any;
   animals: ANIMALS;
+  id: number;
 }
 export interface Chunk extends Quad {
   id: number;
@@ -104,6 +105,7 @@ export interface EquipableItem {
   type: EquipmentType;
 }
 export interface Equiped {
+  [index: string]: Item;
   chest: Item;
   legs: Item;
   pauldrons: Item;

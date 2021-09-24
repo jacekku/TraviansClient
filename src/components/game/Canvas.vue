@@ -25,24 +25,24 @@ export default defineComponent({
     this.canvas.height = min;
     this.drawer = new CanvasDrawer(this.canvas.getContext("2d") as any);
     window.addEventListener("keydown", this.handleKeyEvent);
-    window.addEventListener("mousemove", this.handleMouseMove);
-    window.addEventListener("mousedown", this.handleMouseClick);
-    window.addEventListener("touchend", this.handleMouseClick);
+    this.canvas.addEventListener("mousemove", this.handleMouseMove);
+    this.canvas.addEventListener("mousedown", this.handleMouseClick);
+    this.canvas.addEventListener("touchend", this.handleMouseClick);
     this.render();
   },
   methods: {
     handleMouseClick(e: MouseEvent | TouchEvent) {
       this.updatePointer(e);
       const playerState = this.$store.state.playerState;
-
+      const { block, building } = Utilities.selectBlock(
+        this.pointer,
+        this.terrain(),
+        this.chunks(),
+        this.buildings()
+      );
+      this.$store.commit(MUTATION_TYPE.setSelectedBlock, block);
+      this.$store.commit(MUTATION_TYPE.setSelectedBuilding, building);
       if (playerState.state.includes("building")) {
-        const { block } = Utilities.selectBlock(
-          this.pointer,
-          this.terrain(),
-          this.chunks(),
-          this.buildings()
-        );
-        this.$store.commit(MUTATION_TYPE.setSelectedBlock, block);
         const nearPlayer = Utilities.objectNearEachOther(
           { x: this.thisPlayer().x, y: this.thisPlayer().y },
           this.selectedBlock() || { x: -10, y: -10 }
@@ -65,12 +65,8 @@ export default defineComponent({
       );
       const { x, y } = Utilities.getPointer(
         {
-          x:
-            (e as MouseEvent).clientX ||
-            (e as TouchEvent).changedTouches[0].clientX,
-          y:
-            (e as MouseEvent).clientY ||
-            (e as TouchEvent).changedTouches[0].clientY,
+          x: (e as MouseEvent).offsetX || (e as any).changedTouches[0].offsetX,
+          y: (e as MouseEvent).offsetY || (e as any).changedTouches[0].offsetY,
         },
         frustum,
         this.blockSize()
@@ -87,7 +83,7 @@ export default defineComponent({
       this.canvas.height = min;
       this.drawer = new CanvasDrawer(this.canvas.getContext("2d") as any);
     },
-    handleKeyEvent({ key }) {
+    handleKeyEvent({ key }: { key: string }) {
       let option = "";
       switch (key) {
         case "w":

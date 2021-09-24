@@ -1,8 +1,10 @@
 <script lang="ts">
+import { defineComponent } from "@vue/runtime-core";
+import { getImage } from "../imageUtils";
 import { MUTATION_TYPE } from "../types";
 import Utilities from "../Utilities";
 
-export default {
+export default defineComponent({
   data() {
     return {
       choices: [
@@ -15,7 +17,7 @@ export default {
   },
   methods: {
     imagePath(name: string): string {
-      return `src/assets/${name}.png`;
+      return getImage(name, "base");
     },
     classChanger(name: string): string {
       return name + "-toggle";
@@ -24,7 +26,7 @@ export default {
       this.$store.commit(MUTATION_TYPE.setPanel, name);
     },
   },
-};
+});
 </script>
 
 <template>

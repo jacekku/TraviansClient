@@ -4,6 +4,8 @@ import { createStore } from "vuex";
 import { MUTATION_TYPE } from "./types";
 import { URL } from "./socket";
 import { PlayerState } from "./model/Models";
+
+import "./imageUtils";
 const store = createStore({
   state() {
     return {
