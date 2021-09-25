@@ -16,13 +16,13 @@ const store = createStore({
       chunks: [],
       players: [],
       buildings: [],
-      panel: "inventory",
+      panel: "controls",
       buildingDefinitions: [],
       itemDefinitions: [],
       facilitiesDefinitions: [],
       selectedBlock: {},
       selectedBuilding: {},
-      playerState: { state: "crafting" },
+      playerState: { state: "moving" },
     };
   },
   mutations: {

@@ -1,8 +1,9 @@
 <script lang="ts">
-import { sendMovePlayer, socket } from "../socket";
-import { MUTATION_TYPE } from "../types";
+import { socket } from "../../socket";
+import { MUTATION_TYPE } from "../../types";
 import { defineComponent } from "vue";
-import Utilities from "../Utilities";
+import Utilities from "../../Utilities";
+import { Chunk } from "../../model/Models";
 
 export default defineComponent({
   data() {
@@ -32,8 +33,17 @@ export default defineComponent({
     socket.on("players:requestUpdate", this.onPlayersRequestUpdate);
     socket.on("buildings:requestUpdate", this.onBuildingsRequestUpdate);
     socket.on("items:update", this.onItemsUpdate);
+    socket.on("success", this.onSuccess);
   },
   methods: {
+    onSuccess(data: any) {
+      let { success, detail } = data;
+      if (!success) {
+        success = data;
+      }
+      const ev = new CustomEvent("success:" + success, { detail });
+      dispatchEvent(ev);
+    },
     sendCommand({ detail }: { detail: any }) {
       const { player, selectedBlock } = this.necessaryData();
       if (!Utilities.objectNearEachOther(player, selectedBlock)) {
@@ -41,70 +51,77 @@ export default defineComponent({
         return;
       }
       socket.emit("items:action", {
-        player,
+        player: { name: player.name },
         action: detail.command,
         block: selectedBlock,
+        success: { success: "action", detail: detail.command },
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
     },
     sendCommandBuilding({ detail }: { detail: any }) {
       const { player, selectedBlock, selectedBuilding } = this.necessaryData();
       if (!Utilities.objectNearEachOther(player, selectedBlock)) {
-        alert("you are too far away");
+        alert("You are too far away!");
         return;
       }
       socket.emit("buildings:action", {
-        player,
+        player: { name: player.name },
         action: detail.command,
         building: selectedBuilding,
         block: selectedBlock,
+        success: "build",
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
+      this.sendUpdateBuildings(player.name);
     },
 
     handleUnequip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       socket.emit("items:unequip", {
-        player,
+        player: { name: player.name },
         itemToUnequip: { name: detail },
+        success: "unequip",
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
     },
     handleEquip({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       socket.emit("items:equip", {
-        player,
+        player: { name: player.name },
         itemToEquip: { name: detail },
+        success: "equip",
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
     },
     handleBuild({ detail }: { detail: string }) {
       const { player, selectedBlock } = this.necessaryData();
       if (!player.name) return;
       socket.emit("buildings:create", {
-        player,
+        player: { name: player.name },
         building: { name: detail },
         block: selectedBlock,
+        success: "build",
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
+      this.sendUpdateBuildings(player.name);
     },
     handleCraft({ detail }: { detail: string }) {
       const { player } = this.necessaryData();
       if (!player.name) return;
       socket.emit("items:craft", {
-        player,
+        player: { name: player.name },
         itemToCraft: { name: detail },
+        success: { success: "craft", detail },
       });
-      this.requestUpdateAll();
+      this.sendUpdateItems(player.name);
     },
     handleMove({ detail }: { detail: string }) {
       this.$store.commit(MUTATION_TYPE.setSelectedBlock, {});
       this.$store.commit(MUTATION_TYPE.setPlayerState, {
         state: "moving",
       });
-      const data = this.necessaryData();
-      if (!data.player.name || !data.terrain.mapId || !data.chunks.length)
-        return;
+      const { player, terrain, chunks } = this.necessaryData();
+      if (!player.name || !terrain.mapId || !chunks.length) return;
       const map: object = {
         left: this.moveLeft,
         right: this.moveRight,
@@ -117,15 +134,9 @@ export default defineComponent({
       };
       const method = (map as any)[detail];
       if (method) method();
-      this.requestUpdateAll();
+      this.sendUpdateTerrain(player.name, chunks);
     },
-    requestUpdateAll() {
-      const { player } = this.necessaryData();
-      const payload = { player: { name: player.name } };
-      socket.emit("items:update", payload);
-      socket.emit("players:requestUpdate", payload);
-      socket.emit("buildings:requestUpdate", payload);
-    },
+
     onConnected() {
       console.log("onConnected");
     },
@@ -197,35 +208,92 @@ export default defineComponent({
     },
     moveDown() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x, player.y + 1, terrain, chunks);
+      this.sendMovePlayer(player.name, player.x, player.y + 1, terrain, chunks);
     },
     moveUp() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x, player.y - 1, terrain, chunks);
+      this.sendMovePlayer(player.name, player.x, player.y - 1, terrain, chunks);
     },
     moveLeft() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x - 1, player.y, terrain, chunks);
+      this.sendMovePlayer(player.name, player.x - 1, player.y, terrain, chunks);
     },
     moveRight() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x + 1, player.y, terrain, chunks);
+      this.sendMovePlayer(player.name, player.x + 1, player.y, terrain, chunks);
     },
     moveDownLeft() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x - 1, player.y + 1, terrain, chunks);
+      this.sendMovePlayer(
+        player.name,
+        player.x - 1,
+        player.y + 1,
+        terrain,
+        chunks
+      );
     },
     moveDownRight() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x + 1, player.y + 1, terrain, chunks);
+      this.sendMovePlayer(
+        player.name,
+        player.x + 1,
+        player.y + 1,
+        terrain,
+        chunks
+      );
     },
     moveUpLeft() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x - 1, player.y - 1, terrain, chunks);
+      this.sendMovePlayer(
+        player.name,
+        player.x - 1,
+        player.y - 1,
+        terrain,
+        chunks
+      );
     },
     moveUpRight() {
       const { player, terrain, chunks } = this.necessaryData();
-      sendMovePlayer(player.name, player.x + 1, player.y - 1, terrain, chunks);
+      this.sendMovePlayer(
+        player.name,
+        player.x + 1,
+        player.y - 1,
+        terrain,
+        chunks
+      );
+    },
+    sendMovePlayer(
+      name: string,
+      x: number,
+      y: number,
+      terrain: any,
+      chunks: any[]
+    ) {
+      x = Utilities.clampNumber(x, 0, terrain.width - 1);
+      y = Utilities.clampNumber(y, 0, terrain.height - 1);
+      if (socket) {
+        socket.emit("players:move", {
+          player: { name },
+          move: { x, y },
+          success: "move",
+        });
+        this.sendUpdateTerrain(name, chunks);
+      }
+    },
+    sendUpdateTerrain(name: string, chunks: Chunk[]) {
+      socket.emit("terrain:chunk", {
+        player: { name },
+        chunks: chunks.map((chunk: Chunk) => chunk.id),
+      });
+    },
+    sendUpdateItems(name: string) {
+      socket.emit("items:update", { player: { name } });
+    },
+    sendUpdateBuildings(name: string) {
+      socket.emit("buildings:requestUpdate", { player: { name } });
+    },
+    sendUpdatePlayers(name: string) {
+      socket.emit("players:requestUpdate", { player: { name } });
     },
   },
 });

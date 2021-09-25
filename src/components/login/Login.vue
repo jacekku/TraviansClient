@@ -25,7 +25,6 @@ export default defineComponent({
   <div class="login" v-if="socket.disconnected">
     <input type="text" v-model="playerName" />
     <button @click="connect">connect</button>
-    <h1 v-if="!socket.connected">disconnected</h1>
   </div>
 </template>
 

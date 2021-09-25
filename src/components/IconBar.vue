@@ -12,6 +12,7 @@ export default defineComponent({
         { className: "inventory", image: "inventory" },
         { className: "crafting", image: "craft" },
         { className: "building", image: "build" },
+        { className: "options", image: "options" },
       ],
     };
   },

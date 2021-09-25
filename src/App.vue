@@ -2,19 +2,23 @@
 import IconBar from "./components/IconBar.vue";
 import Login from "./components/login/Login.vue";
 import Canvas from "./components/game/Canvas.vue";
-import SideBar from "./components/sidebar/SideBar.vue";
-import SocketWrapper from "./components/SocketWrapper.vue";
+import SocketWrapper from "./components/wrappers/SocketWrapper.vue";
 import Controls from "./components/sidebar/Controls.vue";
 import Movement from "./components/controls/Movement.vue";
 import Actions from "./components/controls/Actions.vue";
 import Block from "./components/controls/Block.vue";
 import { defineComponent } from "@vue/runtime-core";
 import ContextMenu from "./components/ContextMenu.vue";
+import SoundHandler from "./SoundHandler";
+import SideBar from "./components/sidebar/SideBar.vue";
+import SoundWrapper from "./components/wrappers/SoundWrapper.vue";
 </script>
 
 <script lang="ts">
-import { socket } from "./socket";
 export default defineComponent({
+  data() {
+    return { SoundHandler };
+  },
   computed: {
     controls() {
       return this.$store.state.panel == "controls"
@@ -24,16 +28,13 @@ export default defineComponent({
     panel(): string {
       return this.$store.state.panel;
     },
-    socket() {
-      console.log("socket update in APP");
-      return socket;
-    },
   },
 });
 </script>
 
 <template>
   <SocketWrapper></SocketWrapper>
+  <SoundWrapper></SoundWrapper>
   <Login></Login>
   <ContextMenu></ContextMenu>
   <div class="game-container" :class="controls">

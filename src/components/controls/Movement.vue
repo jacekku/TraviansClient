@@ -34,6 +34,53 @@ export default defineComponent({
       const ev = new CustomEvent(eventName, { detail: option });
       dispatchEvent(ev);
     },
+    handleKeyEvent({ key }: { key: string }) {
+      let option = "";
+      switch (key) {
+        case "w":
+        case "W":
+        case "ArrowUp":
+          option = "up";
+          break;
+        case "x":
+        case "X":
+        case "ArrowDown":
+          option = "down";
+          break;
+        case "a":
+        case "A":
+        case "ArrowLeft":
+          option = "left";
+          break;
+        case "d":
+        case "D":
+        case "ArrowRight":
+          option = "right";
+          break;
+        case "q":
+        case "Q":
+          option = "up-left";
+          break;
+        case "e":
+        case "E":
+          option = "up-right";
+          break;
+        case "z":
+        case "Z":
+          option = "down-left";
+          break;
+        case "c":
+        case "C":
+          option = "down-right";
+          break;
+      }
+
+      const ev = new CustomEvent("move", { detail: option });
+      dispatchEvent(ev);
+    },
+  },
+  created() {
+    window.addEventListener("keydown", this.handleKeyEvent);
   },
 });
 </script>
