@@ -13,11 +13,16 @@ export default defineComponent({
       SoundHandler.changeVolume(volume, target.id);
     },
   },
+  computed: {
+    panel(): string {
+      return this.$store.state.panel;
+    },
+  },
 });
 </script>
 
 <template>
-  <div id="sound">
+  <div v-if="panel === 'options'" id="sound">
     <p>sound</p>
     <div class="slidecontainer">
       <p>SFX</p>

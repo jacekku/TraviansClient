@@ -9,7 +9,6 @@
     "format": "prettier .  --write"
   },
   "dependencies": {
-    "fs": "^0.0.1-security",
     "socket.io-client": "^4.2.0",
     "vue": "^3.2.12",
     "vue-3-socket.io": "^1.0.4",

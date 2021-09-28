@@ -55,8 +55,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="options">
-    <div v-if="block.id" class="block">
+  <div class="block">
+    <div v-if="block" class="block">
       <h3>Block</h3>
       <div v-for="type in possibleActions" class="accordion" @click="accordion">
         <h4>{{ type }}</h4>
@@ -82,8 +82,8 @@ export default defineComponent({
 </template>
 
 <style scoped>
-.options {
-  grid-area: options;
+.block {
+  grid-area: block;
 }
 h3,
 h4 {

@@ -42,8 +42,8 @@ export default defineComponent({
     <IconBar></IconBar>
     <Block v-if="panel == 'controls'"></Block>
     <Movement v-if="panel == 'controls'"></Movement>
+    <SideBar v-if="panel !== 'controls'"></SideBar>
     <Actions v-if="panel == 'controls'"></Actions>
-    <SideBar></SideBar>
   </div>
 </template>
 
@@ -55,24 +55,24 @@ img {
 .inactive {
   opacity: 0.5;
 }
-
-body {
+body,
+html,
+* {
   margin: 0;
   padding: 0;
 }
 
 .game-container {
+  position: absolute;
   display: grid;
   width: 100vw;
   height: 100vh;
-  max-width: 1280px;
-  max-height: 720px;
   border: 1px solid black;
 }
 
 .game-grid {
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 90% 1fr;
+  grid-template-rows: 85% 15%;
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -81,12 +81,12 @@ body {
 }
 
 .controls-grid {
-  grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: 50% 40% 10%;
+  grid-template-columns: 1fr 2fr 1fr 0fr;
+  grid-template-rows: 45% 40% 10% 0%;
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
-    ". game options"
+    ". game block"
     "movement game actions"
     "movement icon-bar actions";
 }
@@ -117,8 +117,7 @@ body {
 
 .actions {
   grid-area: actions;
-  margin-top: 0px;
-  margin-bottom: auto;
+  width: 100%;
 }
 
 .up {
@@ -162,7 +161,6 @@ body {
     "up-left up up-right"
     "left . right"
     "down-left down down-right";
-  margin: auto;
   width: 100%;
   height: 100%;
 }

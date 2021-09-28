@@ -74,6 +74,7 @@ export default defineComponent({
       this.pointer.y = y;
     },
     handleMouseMove(e: MouseEvent | TouchEvent) {
+      console.log(e);
       this.updatePointer(e);
     },
     onResize() {
@@ -138,8 +139,9 @@ export default defineComponent({
 .game {
   margin: 0;
   padding: 0;
-  border: 2px solid black;
   grid-area: game;
+  display: flex;
+  justify-content: center;
 }
 
 canvas {
@@ -149,7 +151,7 @@ canvas {
   image-rendering: crisp-edges;
   margin: 0;
   padding: 0;
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
 }
 </style>

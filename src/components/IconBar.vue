@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import AlertBubble from "./misc/AlertBubble.vue";
+import Icon from "./Icon.vue";
+</script>
+
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
 import { getImage } from "../imageUtils";
@@ -17,9 +22,6 @@ export default defineComponent({
     };
   },
   methods: {
-    imagePath(name: string): string {
-      return getImage(name, "base");
-    },
     classChanger(name: string): string {
       return name + "-toggle";
     },
@@ -32,23 +34,21 @@ export default defineComponent({
 
 <template>
   <div class="icon-bar">
-    <img
+    <Icon
       v-for="choice in choices"
-      v-bind:class="classChanger(choice.className)"
-      v-bind:src="imagePath(choice.image)"
-      v-on:click="setPanel(choice.className)"
-    />
+      :class="classChanger(choice.className)"
+      :imgSrc="choice.image"
+      @click="setPanel(choice.className)"
+    ></Icon>
   </div>
 </template>
 
 <style scoped>
-div img {
-  width: 50px;
-  image-rendering: pixelated;
+.icon-bar div {
+  position: relative;
 }
 .icon-bar {
   grid-area: icon-bar;
-  margin-top: auto;
-  margin-bottom: 0px;
+  display: flex;
 }
 </style>
