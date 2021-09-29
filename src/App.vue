@@ -42,8 +42,8 @@ export default defineComponent({
     <IconBar></IconBar>
     <Block v-if="panel == 'controls'"></Block>
     <Movement v-if="panel == 'controls'"></Movement>
-    <SideBar v-if="panel !== 'controls'"></SideBar>
     <Actions v-if="panel == 'controls'"></Actions>
+    <SideBar v-if="panel !== 'controls'"></SideBar>
   </div>
 </template>
 

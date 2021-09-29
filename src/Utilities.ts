@@ -1,4 +1,11 @@
-import { Block, Building, Chunk, Directions, Terrain } from "./model/Models";
+import {
+  Block,
+  Building,
+  Chunk,
+  Directions,
+  Item,
+  Terrain,
+} from "./model/Models";
 
 type position = { x: number; y: number };
 
@@ -98,5 +105,18 @@ export default class Utilities {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  }
+
+  public static getCollapsedInventory(items: Item[]) {
+    const collapsed: Map<string, number> = new Map();
+    items.filter(Boolean).forEach((item) => {
+      collapsed.has(item.name)
+        ? collapsed.set(
+            item.name,
+            (collapsed as any).get(item.name) + item.stackSize
+          )
+        : collapsed.set(item.name, item.stackSize);
+    });
+    return collapsed;
   }
 }

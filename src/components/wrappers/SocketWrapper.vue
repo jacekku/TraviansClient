@@ -4,10 +4,11 @@ import { MUTATION_TYPE } from "../../types";
 import { defineComponent } from "vue";
 import Utilities from "../../Utilities";
 import { Chunk } from "../../model/Models";
+import { ImageType } from "../../imageUtils";
 
 export default defineComponent({
   data() {
-    return { socket: socket };
+    return { socket: socket, lastDispatch: {} as any };
   },
   mounted() {
     window.addEventListener("move", this.handleMove as any);
@@ -56,7 +57,7 @@ export default defineComponent({
         block: selectedBlock,
         success: { success: "action", detail: detail.command },
       });
-      this.sendUpdateItems(player.name);
+      // this.sendUpdateItems(player.name);
     },
     sendCommandBuilding({ detail }: { detail: any }) {
       const { player, selectedBlock, selectedBuilding } = this.necessaryData();
@@ -188,7 +189,42 @@ export default defineComponent({
     onBuildingsRequestUpdate(data: any) {
       this.updateBuildings(data);
     },
+    handleAlertInventory(
+      oldInventory: Map<string, number>,
+      newInventory: Map<string, number>
+    ) {
+      const changed = new Map<string, number>();
+      Array.from(oldInventory.entries()).forEach((keyValue) => {
+        const [key, value] = keyValue;
+        changed.set(key, value);
+      });
+      Array.from(newInventory.entries()).forEach((keyValue) => {
+        const [key, value] = keyValue;
+        // @ts-ignore
+        changed.set(key, value - changed.get(key) || 0);
+      });
+      Array.from(changed.entries()).forEach((keyValue) => {
+        const lastDispatch = this.lastDispatch["alert:inventory"];
+        if (lastDispatch && Date.now() - lastDispatch < 10) {
+          return;
+        }
+        const [key, value] = keyValue;
+        if (!value) return;
+        const ev = new CustomEvent("alert:inventory", {
+          detail: { itemName: key, imageType: "items" as ImageType },
+        });
+        dispatchEvent(ev);
+        this.lastDispatch["alert:inventory"] = Date.now();
+      });
+    },
     onItemsUpdate(data: any) {
+      const { items, equiped } = {
+        items: this.$store.state.items,
+        equiped: this.$store.state.equiped,
+      };
+      const oldInventory = Utilities.getCollapsedInventory(items);
+      const newInventory = Utilities.getCollapsedInventory(data.items);
+      this.handleAlertInventory(oldInventory, newInventory);
       this.updateInventory(data);
     },
     updateBuildings(data: any) {

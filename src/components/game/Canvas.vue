@@ -74,7 +74,6 @@ export default defineComponent({
       this.pointer.y = y;
     },
     handleMouseMove(e: MouseEvent | TouchEvent) {
-      console.log(e);
       this.updatePointer(e);
     },
     onResize() {

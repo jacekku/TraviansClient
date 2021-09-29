@@ -44,16 +44,7 @@ export default defineComponent({
     },
     collapsedInventory(): any {
       const items = this.$store.state.items;
-      const collapsed: Map<string, number> = new Map();
-      items.filter(Boolean).forEach((item) => {
-        collapsed.has(item.name)
-          ? collapsed.set(
-              item.name,
-              (collapsed as any).get(item.name) + item.stackSize
-            )
-          : collapsed.set(item.name, item.stackSize);
-      });
-      return collapsed;
+      return Utilities.getCollapsedInventory(items);
     },
   },
   methods: {

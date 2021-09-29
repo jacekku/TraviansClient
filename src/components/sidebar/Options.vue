@@ -22,7 +22,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div v-if="panel === 'options'" id="sound">
+  <div v-if="panel == 'options'" id="sound">
     <p>sound</p>
     <div class="slidecontainer">
       <p>SFX</p>

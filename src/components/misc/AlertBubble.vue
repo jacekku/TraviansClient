@@ -2,14 +2,33 @@
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
+  data() {
+    return {
+      alerts: 0,
+    };
+  },
   props: {
-    alerts: Number,
+    alertType: String,
+  },
+  methods: {
+    addAlert() {
+      if (!this.alerts) this.alerts = 0;
+      this.alerts++;
+    },
+    clearAlerts() {
+      this.alerts = 0;
+    },
+  },
+  mounted() {
+    window.addEventListener("alert:" + this.alertType, () => {
+      this.addAlert();
+    });
   },
 });
 </script>
 
 <template>
-  <div class="alert-bubble">
+  <div v-if="alerts" class="alert-bubble">
     <p>{{ alerts }}</p>
   </div>
 </template>

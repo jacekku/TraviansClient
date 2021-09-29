@@ -25,9 +25,6 @@ export default defineComponent({
     classChanger(name: string): string {
       return name + "-toggle";
     },
-    setPanel(name: string) {
-      this.$store.commit(MUTATION_TYPE.setPanel, name);
-    },
   },
 });
 </script>
@@ -37,8 +34,8 @@ export default defineComponent({
     <Icon
       v-for="choice in choices"
       :class="classChanger(choice.className)"
+      :name="choice.className"
       :imgSrc="choice.image"
-      @click="setPanel(choice.className)"
     ></Icon>
   </div>
 </template>
