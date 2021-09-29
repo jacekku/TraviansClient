@@ -91,6 +91,7 @@ export default defineComponent({
 .building-possibility {
   border: 1px solid black;
   width: 33%;
+  background: rgba(255, 255, 255, 0.3);
 }
 .source-items {
   display: flex;

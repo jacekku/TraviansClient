@@ -17,6 +17,7 @@ export default defineComponent({
 </script>
 <template>
   <div v-if="panel === 'building'" class="building">
+    <h1>Building</h1>
     <div class="building-possibilities">
       <BuildingPossibility
         v-for="building in buildingDefinitions"
@@ -36,5 +37,9 @@ export default defineComponent({
 .building-possibilities {
   display: flex;
   flex-wrap: wrap;
+}
+
+h1 {
+  text-align: center;
 }
 </style>

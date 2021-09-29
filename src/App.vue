@@ -52,6 +52,11 @@ img {
   image-rendering: pixelated;
 }
 
+body {
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .inactive {
   opacity: 0.5;
 }
