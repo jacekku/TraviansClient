@@ -184,7 +184,13 @@ export type Directions =
   | "down"
   | "down-right";
 
-type State = "moving" | "building" | "crafting" | "building:chosen" | "waiting";
+type State =
+  | "moving"
+  | "building"
+  | "crafting"
+  | "building:chosen"
+  | "waiting"
+  | "idle";
 export type PlayerState = {
   state: State;
   detail: any;

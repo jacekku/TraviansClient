@@ -67,6 +67,9 @@ const store = createStore({
       state.selectedBuilding = building;
     },
     [MUTATION_TYPE.setPlayerState](state: any, playerState: PlayerState) {
+      if (state.playerState.state == "waiting" && playerState.state != "idle") {
+        dispatchEvent(new CustomEvent("timer:cancel"));
+      }
       state.playerState = playerState;
     },
     [MUTATION_TYPE.setPointer](state: any, pointer: { x: number; y: number }) {
