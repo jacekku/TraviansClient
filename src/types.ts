@@ -28,5 +28,6 @@ const MUTATION_TYPE = {
   setSelectedBuilding: "setSelectedBuilding",
   setPlayerState: "setPlayerState",
   setPointer: "setPointer",
+  setTimer: "setTimer",
 };
 export { ACTION_MAPPER, MUTATION_TYPE };

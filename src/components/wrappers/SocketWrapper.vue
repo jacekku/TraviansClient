@@ -3,7 +3,7 @@ import { socket } from "../../socket";
 import { MUTATION_TYPE } from "../../types";
 import { defineComponent } from "vue";
 import Utilities from "../../Utilities";
-import { Chunk } from "../../model/Models";
+import { Chunk, PlayerState, Timer } from "../../model/Models";
 import { ImageType } from "../../imageUtils";
 
 export default defineComponent({
@@ -21,6 +21,7 @@ export default defineComponent({
       "command:building",
       this.sendCommandBuilding as any
     );
+    window.addEventListener("timer:cancel", this.cancelTimer);
     socket.on("exception", (data) => alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
@@ -35,8 +36,44 @@ export default defineComponent({
     socket.on("buildings:requestUpdate", this.onBuildingsRequestUpdate);
     socket.on("items:update", this.onItemsUpdate);
     socket.on("success", this.onSuccess);
+    socket.on("timer", this.handleTimers);
   },
   methods: {
+    cancelTimer() {
+      const timer = this.$store.state.playerState.detail as Timer;
+      socket.emit("timer:cancel", { timer });
+      this.$store.commit(MUTATION_TYPE.setPlayerState, { state: "idle" });
+    },
+    handleTimers(timers: Timer[] | { id: string; endTime: number }) {
+      if ((timers as any).id) {
+        this.$store.commit(MUTATION_TYPE.setPlayerState, {
+          state: "waiting",
+          detail: timers,
+        } as PlayerState);
+      }
+
+      if ((timers as Timer[]).forEach) {
+        const { player } = this.necessaryData();
+        (timers as Timer[]).forEach((timer) => {
+          if (!timer) return;
+
+          if (timer.cancelled) {
+            socket.emit("timer:ack", [timer.id, "cancelled", player.name]);
+            return;
+          }
+          if (timer.hasEnded) {
+            socket.emit("timer:ack", [timer.id, "ended", player.name]);
+            return;
+          }
+          if (timer.id === this.$store.state.playerState.detail.id) {
+            this.$store.commit(MUTATION_TYPE.setPlayerState, {
+              state: "waiting",
+              detail: timer,
+            } as PlayerState);
+          }
+        });
+      }
+    },
     onSuccess(data: any) {
       let { success, detail } = data;
       if (!success) {
@@ -44,6 +81,7 @@ export default defineComponent({
       }
       const ev = new CustomEvent("success:" + success, { detail });
       dispatchEvent(ev);
+      this.$store.commit(MUTATION_TYPE.setPlayerState, { state: "idle" });
     },
     sendCommand({ detail }: { detail: any }) {
       const { player, selectedBlock } = this.necessaryData();

@@ -12,6 +12,7 @@ import ContextMenu from "./components/ContextMenu.vue";
 import SoundHandler from "./SoundHandler";
 import SideBar from "./components/sidebar/SideBar.vue";
 import SoundWrapper from "./components/wrappers/SoundWrapper.vue";
+import TimerBox from "./components/misc/TimerBox.vue";
 </script>
 
 <script lang="ts">
@@ -37,6 +38,7 @@ export default defineComponent({
   <SoundWrapper></SoundWrapper>
   <Login></Login>
   <ContextMenu></ContextMenu>
+  <TimerBox></TimerBox>
   <div class="game-container" :class="controls">
     <Canvas></Canvas>
     <IconBar></IconBar>

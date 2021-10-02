@@ -184,8 +184,17 @@ export type Directions =
   | "down"
   | "down-right";
 
-type State = "moving" | "building" | "crafting" | "building:chosen";
+type State = "moving" | "building" | "crafting" | "building:chosen" | "waiting";
 export type PlayerState = {
   state: State;
   detail: any;
 };
+
+export interface Timer {
+  id: string;
+  startTime: number;
+  cycleAmount: number;
+  currentCycle: number;
+  hasEnded: boolean;
+  cancelled: boolean;
+}
