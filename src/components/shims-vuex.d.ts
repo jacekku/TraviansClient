@@ -35,6 +35,7 @@ declare module "@vue/runtime-core" {
     selectedBuilding: BuildingDefinition;
     playerState: PlayerState;
     pointer: { x: number; y: number };
+    timer: { id: string; endTime: number };
   }
 
   interface ComponentCustomProperties {
