@@ -25,6 +25,32 @@ export default class CanvasDrawer {
     this.ctx.drawImage(imageToRender, x, y, width, height);
   }
 
+  clippedImage(
+    imageToRender: CanvasImageSource,
+    sx: number,
+    sy: number,
+    swidth: number,
+    sheight: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) {
+    width = width || (imageToRender.width as number);
+    height = height || (imageToRender.height as number);
+    this.ctx.drawImage(
+      imageToRender,
+      sx,
+      sy,
+      swidth,
+      sheight,
+      x,
+      y,
+      width,
+      height
+    );
+  }
+
   background(color: string) {
     this.ctx.clearRect(
       0,

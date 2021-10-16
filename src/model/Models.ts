@@ -12,6 +12,12 @@ export interface BuildingDefinition {
   level: number;
   upgrade?: BuildingDefinition;
   craftingFacilities?: FacilitiesDefinition[];
+  growable: Growable;
+}
+export interface Growable {
+  cycleAmount: number;
+  maxGrowth: number;
+  growthStage: number;
 }
 
 export interface Buildable {

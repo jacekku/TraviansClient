@@ -104,7 +104,6 @@ html,
 
 .item img {
   image-rendering: pixelated;
-  width: 100%;
   height: 100%;
   position: absolute;
 }
@@ -114,6 +113,7 @@ html,
   position: relative;
   width: 4vw;
   height: 4vw;
+  overflow: hidden;
 }
 
 .movement {
