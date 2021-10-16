@@ -75,6 +75,7 @@ import sand_castle1 from "./assets/buildings/sand_castle1.png";
 import sand_castle2 from "./assets/buildings/sand_castle2.png";
 import sand_castle3 from "./assets/buildings/sand_castle3.png";
 import smithy from "./assets/buildings/smithy.png";
+import wheat_field from "./assets/buildings/wheat_field.png";
 
 const IMAGES: any = {
   blank,
@@ -158,6 +159,7 @@ const IMAGES: any = {
     sand_castle2,
     sand_castle3,
     smithy,
+    wheat_field,
   },
 };
 

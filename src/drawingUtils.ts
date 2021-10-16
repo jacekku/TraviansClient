@@ -131,7 +131,11 @@ function draw(
       if (nearPlayer && block) {
         drawBuilding(
           drawer,
-          { name: playerState.detail.building, x: block.x, y: block.y },
+          {
+            name: playerState.detail.building,
+            x: block.x,
+            y: block.y,
+          } as Building,
           blockSize
         );
         drawSelectedBlock(drawer, block, blockSize);
@@ -144,7 +148,7 @@ function draw(
           name: playerState.detail.building,
           x: selectedBlock.x,
           y: selectedBlock.y,
-        },
+        } as Building,
         blockSize
       );
     }
@@ -262,11 +266,26 @@ function drawBuildings(
 
 function drawBuilding(
   drawer: CanvasDrawer,
-  building: { name: string; x: number; y: number },
+  building: Building,
   blockSize: number
 ) {
-  let img = mapImageToString(building.name, "buildings");
+  let img: CanvasImageSource = mapImageToString(building.name, "buildings");
   if (!img) {
+    return;
+  }
+  if (building.growable) {
+    const growthStage = building.growable.growthStage || 0;
+    drawer.ctx.drawImage(
+      img,
+      growthStage * 16,
+      0,
+      16,
+      16,
+      building.x * blockSize,
+      building.y * blockSize,
+      blockSize,
+      blockSize
+    );
     return;
   }
   drawer.image(

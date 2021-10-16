@@ -82,6 +82,15 @@ export default defineComponent({
       const ev = new CustomEvent("success:" + success, { detail });
       dispatchEvent(ev);
       this.$store.commit(MUTATION_TYPE.setPlayerState, { state: "idle" });
+      const { player } = this.necessaryData();
+      switch (success) {
+        case "build":
+          this.sendUpdateBuildings(player.name);
+          break;
+        case "craft":
+          this.sendUpdateItems(player.name);
+          break;
+      }
     },
     sendCommand({ detail }: { detail: any }) {
       const { player, selectedBlock } = this.necessaryData();
@@ -110,8 +119,6 @@ export default defineComponent({
         block: selectedBlock,
         success: "build",
       });
-      this.sendUpdateItems(player.name);
-      this.sendUpdateBuildings(player.name);
     },
 
     handleUnequip({ detail }: { detail: string }) {
