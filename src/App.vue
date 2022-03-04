@@ -13,6 +13,11 @@ import SoundHandler from "./SoundHandler";
 import SideBar from "./components/sidebar/SideBar.vue";
 import SoundWrapper from "./components/wrappers/SoundWrapper.vue";
 import TimerBox from "./components/misc/TimerBox.vue";
+import FirebaseWrapper from "./components/wrappers/FirebaseWrapper.vue";
+import CharacterList from "./components/login/CharacterList.vue";
+import { getAuth } from "firebase/auth";
+import { MUTATION_TYPE } from "./types";
+import { URL } from "./socket";
 </script>
 
 <script lang="ts">
@@ -29,23 +34,57 @@ export default defineComponent({
     panel(): string {
       return this.$store.state.panel;
     },
+    loggedIn(): boolean {
+      if (this.$store.state.user.uid) {
+        fetch(URL + "/state/definitions", {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+          .then((data) => data.json())
+          .then((data) =>
+            this.$store.commit(MUTATION_TYPE.setDefinitions, data)
+          )
+          .catch((err) => {
+            console.error(err);
+          });
+
+        return true;
+      }
+      return false;
+    },
+    choseCharacter(): boolean {
+      return !!this.$store.state.player.name;
+    },
+  },
+
+  mounted: function () {
+    getAuth().onAuthStateChanged((user: any) => {
+      if (user) {
+        this.$store.commit(MUTATION_TYPE.setUser, user);
+      }
+    });
   },
 });
 </script>
 
 <template>
+  <FirebaseWrapper></FirebaseWrapper>
   <SocketWrapper></SocketWrapper>
   <SoundWrapper></SoundWrapper>
-  <Login></Login>
-  <ContextMenu></ContextMenu>
-  <TimerBox></TimerBox>
-  <div class="game-container" :class="controls">
-    <Canvas></Canvas>
-    <IconBar></IconBar>
-    <Block v-if="panel == 'controls'"></Block>
-    <Movement v-if="panel == 'controls'"></Movement>
-    <Actions v-if="panel == 'controls'"></Actions>
-    <SideBar v-if="panel !== 'controls'"></SideBar>
+  <Login v-if="!loggedIn"></Login>
+  <CharacterList v-else-if="!choseCharacter"></CharacterList>
+  <div v-else class="game">
+    <ContextMenu></ContextMenu>
+    <TimerBox></TimerBox>
+    <div class="game-container" :class="controls">
+      <Canvas></Canvas>
+      <IconBar></IconBar>
+      <Block v-if="panel == 'controls'"></Block>
+      <Movement v-if="panel == 'controls'"></Movement>
+      <Actions v-if="panel == 'controls'"></Actions>
+      <SideBar v-if="panel !== 'controls'"></SideBar>
+    </div>
   </div>
 </template>
 
@@ -53,10 +92,9 @@ export default defineComponent({
 img {
   image-rendering: pixelated;
 }
-
-body {
+#app {
   background-repeat: no-repeat;
-  background-size: cover;
+  background-image: url("./assets/grassy_plains_by_theodenn.jpg");
 }
 
 .inactive {
@@ -69,11 +107,15 @@ html,
   padding: 0;
 }
 
+.game {
+  border: 1px solid black;
+}
+
 .game-container {
   position: absolute;
   display: grid;
-  width: 100vw;
-  height: 100vh;
+  width: 1024px;
+  height: 720px;
   border: 1px solid black;
 }
 

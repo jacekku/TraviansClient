@@ -75,6 +75,7 @@ export default defineComponent({
       }
     },
     onSuccess(data: any) {
+      if (!data) return;
       let { success, detail } = data;
       if (!success) {
         success = data;
@@ -190,6 +191,7 @@ export default defineComponent({
       console.log("onDisconnected");
     },
     updatePlayers(newPlayers: any[]) {
+      if (!newPlayers) return;
       const playerName = this.$store.state.player.name;
       const players = newPlayers;
       const newPlayer = players.find(

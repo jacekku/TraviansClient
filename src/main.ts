@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { createStore } from "vuex";
-import { MUTATION_TYPE } from "./types";
+import { FirebaseUser, MUTATION_TYPE } from "./types";
 import { URL } from "./socket";
 import { PlayerState } from "./model/Models";
 
@@ -23,6 +23,7 @@ const store = createStore({
       selectedBlock: {},
       selectedBuilding: {},
       playerState: { state: "moving" },
+      user: {},
     };
   },
   mutations: {
@@ -78,12 +79,10 @@ const store = createStore({
     [MUTATION_TYPE.setPointer](state: any, pointer: { x: number; y: number }) {
       state.pointer = pointer;
     },
+    [MUTATION_TYPE.setUser](state: any, user: FirebaseUser) {
+      state.user = user;
+    },
   },
 });
 
 const app = createApp(App).use(store).mount("#app");
-
-fetch(URL + "/state/definitions")
-  .then((data) => data.json())
-  .then((data) => app.$store.commit(MUTATION_TYPE.setDefinitions, data))
-  .catch((err) => console.error(err));
