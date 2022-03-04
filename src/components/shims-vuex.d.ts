@@ -15,6 +15,7 @@ import {
   PlayerState,
   Terrain,
 } from "../model/Models";
+import { FirebaseUser } from "../types";
 
 declare module "@vue/runtime-core" {
   // Declare your own store states.
@@ -36,6 +37,7 @@ declare module "@vue/runtime-core" {
     playerState: PlayerState;
     pointer: { x: number; y: number };
     timer: { id: string; endTime: number };
+    user: FirebaseUser;
   }
 
   interface ComponentCustomProperties {

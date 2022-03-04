@@ -29,5 +29,13 @@ const MUTATION_TYPE = {
   setPlayerState: "setPlayerState",
   setPointer: "setPointer",
   setTimer: "setTimer",
+  setUser: "setUser",
+};
+
+export type LoginProvider = "GOOGLE";
+export type FirebaseUser = {
+  uid: string;
+  accessToken: string;
+  displayName: string;
 };
 export { ACTION_MAPPER, MUTATION_TYPE };
