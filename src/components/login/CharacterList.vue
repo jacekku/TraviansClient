@@ -8,7 +8,7 @@ export default defineComponent({
     return {
       newCharacterName: "",
       socket: socket,
-      characters: [],
+      characters: [] as any,
       error: "",
     };
   },
@@ -117,8 +117,6 @@ export default defineComponent({
 
 <style scoped>
 .character-list {
-  width: 1024px;
-  height: 720px;
   text-align: center;
 }
 .user-data {
@@ -140,5 +138,9 @@ export default defineComponent({
 
 .character-create > * {
   height: 30px;
+}
+
+.character-list {
+  height: 100vh;
 }
 </style>

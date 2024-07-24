@@ -3,9 +3,10 @@ import App from "./App.vue";
 import { createStore } from "vuex";
 import { FirebaseUser, MUTATION_TYPE } from "./types";
 import { URL } from "./socket";
-import { PlayerState } from "./model/Models";
+import { Chunk, PlayerState } from "./model/Models";
 
 import "./imageUtils";
+import { stat } from "fs";
 const store = createStore({
   state() {
     return {
@@ -24,6 +25,7 @@ const store = createStore({
       selectedBuilding: {},
       playerState: { state: "moving" },
       user: {},
+      alertContent: "",
     };
   },
   mutations: {
@@ -37,6 +39,13 @@ const store = createStore({
 
     [MUTATION_TYPE.addChunk](state: any, newChunk) {
       state.chunks.push(...newChunk);
+    },
+
+    [MUTATION_TYPE.clearChunks](state: any) {
+      const playerChunk = state.player.playerChunk;
+      state.chunks = [
+        ...state.chunks.filter((chunk: Chunk) => chunk.id === playerChunk),
+      ];
     },
 
     [MUTATION_TYPE.setTerrain](state: any, newTerrain) {
@@ -54,8 +63,12 @@ const store = createStore({
       state.panel = panel;
     },
     [MUTATION_TYPE.setDefinitions](state: any, payload) {
+      //TODO fix wheat
+      const filteredDefinitions = payload.buildingDefinitions.filter(
+        (building: any) => building.name != "wheat_field"
+      );
       state.itemDefinitions = payload.itemDefinitions;
-      state.buildingDefinitions = payload.buildingDefinitions;
+      state.buildingDefinitions = filteredDefinitions;
       state.facilitiesDefinitions = payload.facilitiesDefinitions;
     },
     [MUTATION_TYPE.setBuildings](state: any, buildings: any) {
@@ -81,6 +94,9 @@ const store = createStore({
     },
     [MUTATION_TYPE.setUser](state: any, user: FirebaseUser) {
       state.user = user;
+    },
+    [MUTATION_TYPE.setAlert](state: any, alertContent: string) {
+      state.alertContent = alertContent;
     },
   },
 });

@@ -18,12 +18,29 @@ import CharacterList from "./components/login/CharacterList.vue";
 import { getAuth } from "firebase/auth";
 import { MUTATION_TYPE } from "./types";
 import { URL } from "./socket";
+import AlertBox from "./components/AlertBox.vue";
 </script>
 
 <script lang="ts">
 export default defineComponent({
   data() {
     return { SoundHandler };
+  },
+  methods: {
+    getDefinitions: function () {
+      fetch(URL + "/state/definitions", {
+        headers: {
+          Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+        },
+      })
+        .then((data) => data.json())
+        .then((data) => this.$store.commit(MUTATION_TYPE.setDefinitions, data))
+        .catch((err) => {
+          console.error(err);
+          console.log("retrying to get definitions in 10 seconds...");
+          setTimeout(this.getDefinitions, 10000);
+        });
+    },
   },
   computed: {
     controls() {
@@ -36,19 +53,7 @@ export default defineComponent({
     },
     loggedIn(): boolean {
       if (this.$store.state.user.uid) {
-        fetch(URL + "/state/definitions", {
-          headers: {
-            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
-          },
-        })
-          .then((data) => data.json())
-          .then((data) =>
-            this.$store.commit(MUTATION_TYPE.setDefinitions, data)
-          )
-          .catch((err) => {
-            console.error(err);
-          });
-
+        this.getDefinitions();
         return true;
       }
       return false;
@@ -77,6 +82,7 @@ export default defineComponent({
   <div v-else class="game">
     <ContextMenu></ContextMenu>
     <TimerBox></TimerBox>
+    <AlertBox></AlertBox>
     <div class="game-container" :class="controls">
       <Canvas></Canvas>
       <IconBar></IconBar>
@@ -107,16 +113,13 @@ html,
   padding: 0;
 }
 
-.game {
-  border: 1px solid black;
-}
-
 .game-container {
   position: absolute;
   display: grid;
-  width: 1024px;
-  height: 720px;
   border: 1px solid black;
+  width: 99.3vw;
+  height: 99.3vh;
+  background-color: white;
 }
 
 .game-grid {

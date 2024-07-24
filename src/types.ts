@@ -8,10 +8,10 @@ const ACTION_MAPPER = {
   OIL: ["EXTRACT"],
   COAL: ["MINE"],
   MOUNTAIN: ["GATHER STONES", "MINE STONES"],
-  FOREST: ["CHOP WOOD", "GATHER STICKS", "FORAGE BERRIES"],
+  FOREST: ["CHOP WOOD"], //"GATHER STICKS", "FORAGE BERRIES"],
   FISH: ["FISH"],
   DESERT: ["GATHER SAND"],
-  BEACH: ["GATHER SAND"],
+  // BEACH: ["GATHER SAND"],
   BUILDING: ["DEMOLISH", "UPGRADE", "HARVEST"],
 };
 
@@ -30,6 +30,8 @@ const MUTATION_TYPE = {
   setPointer: "setPointer",
   setTimer: "setTimer",
   setUser: "setUser",
+  setAlert: "setAlert",
+  clearChunks: "clearChunks",
 };
 
 export type LoginProvider = "GOOGLE";

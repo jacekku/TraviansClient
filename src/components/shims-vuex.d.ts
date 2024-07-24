@@ -38,6 +38,7 @@ declare module "@vue/runtime-core" {
     pointer: { x: number; y: number };
     timer: { id: string; endTime: number };
     user: FirebaseUser;
+    alertContent: string;
   }
 
   interface ComponentCustomProperties {

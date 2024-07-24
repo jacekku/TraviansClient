@@ -22,7 +22,7 @@ export default defineComponent({
       this.sendCommandBuilding as any
     );
     window.addEventListener("timer:cancel", this.cancelTimer);
-    socket.on("exception", (data) => alert(JSON.stringify(data.message)));
+    socket.on("exception", (data) => this.alert(JSON.stringify(data.message)));
     socket.on("message", (data) => console.log("socket.on message: " + data));
     socket.on("connect", this.onConnected);
     socket.on("disconnected", this.onDisconnected);
@@ -39,6 +39,9 @@ export default defineComponent({
     socket.on("timer", this.handleTimers);
   },
   methods: {
+    alert(content: string) {
+      this.$store.commit(MUTATION_TYPE.setAlert, content);
+    },
     cancelTimer() {
       const timer = this.$store.state.playerState.detail as Timer;
       socket.emit("timer:cancel", { timer });
@@ -96,7 +99,7 @@ export default defineComponent({
     sendCommand({ detail }: { detail: any }) {
       const { player, selectedBlock } = this.necessaryData();
       if (!Utilities.objectNearEachOther(player, selectedBlock)) {
-        alert("you are too far away");
+        this.alert("you are too far away");
         return;
       }
       socket.emit("items:action", {
@@ -110,7 +113,7 @@ export default defineComponent({
     sendCommandBuilding({ detail }: { detail: any }) {
       const { player, selectedBlock, selectedBuilding } = this.necessaryData();
       if (!Utilities.objectNearEachOther(player, selectedBlock)) {
-        alert("You are too far away!");
+        this.alert("You are too far away!");
         return;
       }
       socket.emit("buildings:action", {
@@ -364,6 +367,10 @@ export default defineComponent({
       }
     },
     sendUpdateTerrain(name: string, chunks: Chunk[]) {
+      if (chunks.length > 30) {
+        chunks = [];
+        this.$store.commit(MUTATION_TYPE.clearChunks);
+      }
       socket.emit("terrain:chunk", {
         player: { name },
         chunks: chunks.map((chunk: Chunk) => chunk.id),
