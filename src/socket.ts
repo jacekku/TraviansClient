@@ -11,7 +11,7 @@ function getURL() {
   if (window.location.href.includes("warlords.jacekku.net")) {
     return "https://warlords.jacekku.net/api";
   }
-  return "http://" + window.location.hostname + "/api";
+  return "http://" + window.location.hostname + ":13000";
 }
 
 const URL = getURL();
@@ -21,6 +21,7 @@ const socket = io(URL, {
   secure: true,
   transports: ["websocket"],
   autoConnect: false,
+  path: "/api/socket.io",
 });
 
 export { socket, URL };
