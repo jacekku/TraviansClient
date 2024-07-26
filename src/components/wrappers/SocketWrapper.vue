@@ -1,10 +1,10 @@
 <script lang="ts">
-import { socket } from "../../socket";
-import { MUTATION_TYPE } from "../../types";
 import { defineComponent } from "vue";
 import Utilities from "../../Utilities";
-import { Chunk, PlayerState, Timer } from "../../model/Models";
 import { ImageType } from "../../imageUtils";
+import { Chunk, PlayerState, Timer } from "../../model/Models";
+import { socket } from "../../socket";
+import { MUTATION_TYPE } from "../../types";
 
 export default defineComponent({
   data() {

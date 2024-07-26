@@ -16,7 +16,7 @@ function getURL() {
 
 const URL = getURL();
 
-const socket = io(URL, {
+const socket = io(URL.replace("/api", ""), {
   reconnection: false,
   secure: true,
   transports: ["websocket"],

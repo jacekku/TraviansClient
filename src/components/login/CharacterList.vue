@@ -1,8 +1,8 @@
 <script lang="ts">
+import { getAuth } from "firebase/auth";
 import { defineComponent } from "vue";
 import { socket, URL } from "../../socket";
 import { MUTATION_TYPE } from "../../types";
-import { getAuth } from "firebase/auth";
 export default defineComponent({
   data() {
     return {
